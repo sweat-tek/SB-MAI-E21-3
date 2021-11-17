@@ -184,6 +184,56 @@ public class ResizeHandleKit {
             f.setBounds(anchor, lead);
             f.changed();
         }
+        
+        public void multiWayKeyActions(KeyEvent evt, String C) { //Function gets key events and which handle is being used as an input
+            Rectangle2D.Double r = getOwner().getBounds();
+            switch (evt.getKeyCode()) {
+                case KeyEvent.VK_UP: // When Up Arrow Key is Pressed
+                    if(C=="NW" || C=="N" || C=="NE"){ // If it is a North handle
+                        setBounds(
+                            new Point2D.Double(r.x, r.y - 1),
+                            new Point2D.Double(r.x + r.width, r.y + r.height));}
+                    else if(r.height > 1 && C=="SW" || C=="S" || C=="SE"){  // If it is a South handle
+                        setBounds(
+                            new Point2D.Double(r.x, r.y),
+                            new Point2D.Double(r.x + r.width, r.y + r.height - 1));}
+                    evt.consume();
+                    break;
+                case KeyEvent.VK_DOWN: // When Down Arrow Key is Pressed
+                    if(r.height > 1 && C=="NW" || C=="N" || C=="NE"){ // If it is a North handle
+                        setBounds(
+                            new Point2D.Double(r.x, r.y + 1),
+                            new Point2D.Double(r.x + r.width, r.y + r.height));}
+                    else if(C=="SW" || C=="S" || C=="SE"){ // If it is a South handle
+                        setBounds(
+                            new Point2D.Double(r.x, r.y),
+                            new Point2D.Double(r.x + r.width, r.y + r.height + 1));}
+                    evt.consume();
+                    break;
+                case KeyEvent.VK_LEFT: // When Left Arrow Key is Pressed
+                    if(C=="NW" || C=="W" || C=="SW"){  // If it is a West handle
+                        setBounds(
+                            new Point2D.Double(r.x - 1, r.y),
+                            new Point2D.Double(r.x + r.width, r.y + r.height));}
+                    else if(r.width > 1 && C=="NE" || C=="E" || C=="SE"){ // If it is a East handle
+                        setBounds(
+                                new Point2D.Double(r.x, r.y),
+                                new Point2D.Double(r.x + r.width - 1, r.y + r.height));}
+                    evt.consume();
+                    break;
+                case KeyEvent.VK_RIGHT: // When Right Arrow Key is Pressed
+                    if(C=="NW" || C=="W" || C=="SW"){ // If it is a West handle
+                        setBounds(
+                                new Point2D.Double(r.x + 1, r.y),
+                                new Point2D.Double(r.x + r.width, r.y + r.height));}
+                    else if(r.width > 1 && C=="NE" || C=="E" || C=="SE"){ // If it is a East handle
+                        setBounds(
+                            new Point2D.Double(r.x, r.y),
+                            new Point2D.Double(r.x + r.width + 1, r.y + r.height));}
+                    evt.consume();
+                    break;
+            }
+        }
     }
 
     private static class NorthEastHandle extends ResizeHandle {
@@ -201,40 +251,10 @@ public class ResizeHandleKit {
 
         @Override
         public void keyPressed(KeyEvent evt) {
-            Rectangle2D.Double r = getOwner().getBounds();
-
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y - 1),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    if (r.height > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y + 1),
-                                new Point2D.Double(r.x + r.width, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_LEFT:
-                    if (r.width > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y),
-                                new Point2D.Double(r.x + r.width - 1, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width + 1, r.y + r.height));
-                    evt.consume();
-                    break;
-            }
+            multiWayKeyActions(evt, "NE");
         }
-
+           
+        @Override
         public Cursor getCursor() {
             return Cursor.getPredefinedCursor(
                     getOwner().isTransformable() ? Cursor.NE_RESIZE_CURSOR : Cursor.DEFAULT_CURSOR);
@@ -256,29 +276,7 @@ public class ResizeHandleKit {
 
         @Override
         public void keyPressed(KeyEvent evt) {
-            Rectangle2D.Double r = getOwner().getBounds();
-
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    break;
-                case KeyEvent.VK_LEFT:
-                    if (r.width > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y),
-                                new Point2D.Double(r.x + r.width - 1, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width + 1, r.y + r.height));
-                    evt.consume();
-                    break;
-            }
+            multiWayKeyActions(evt, "E");
         }
 
         @Override
@@ -303,32 +301,10 @@ public class ResizeHandleKit {
 
         @Override
         public void keyPressed(KeyEvent evt) {
-            Rectangle2D.Double r = getOwner().getBounds();
-
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y - 1),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    if (r.height > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y + 1),
-                                new Point2D.Double(r.x + r.width, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_LEFT:
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    evt.consume();
-                    break;
-            }
+            multiWayKeyActions(evt, "N");
         }
-
+        
+        @Override
         public Cursor getCursor() {
             return Cursor.getPredefinedCursor(
                     getOwner().isTransformable() ? Cursor.N_RESIZE_CURSOR : Cursor.DEFAULT_CURSOR);
@@ -350,38 +326,7 @@ public class ResizeHandleKit {
 
         @Override
         public void keyPressed(KeyEvent evt) {
-            Rectangle2D.Double r = getOwner().getBounds();
-
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y - 1),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    if (r.height > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y + 1),
-                                new Point2D.Double(r.x + r.width, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_LEFT:
-                    setBounds(
-                            new Point2D.Double(r.x - 1, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if (r.width > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x + 1, r.y),
-                                new Point2D.Double(r.x + r.width, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-            }
+            multiWayKeyActions(evt, "NW");
         }
 
         @Override
@@ -406,38 +351,7 @@ public class ResizeHandleKit {
 
         @Override
         public void keyPressed(KeyEvent evt) {
-            Rectangle2D.Double r = getOwner().getBounds();
-
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    if (r.height > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y),
-                                new Point2D.Double(r.x + r.width, r.y + r.height - 1));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height + 1));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_LEFT:
-                    if (r.width > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y),
-                                new Point2D.Double(r.x + r.width - 1, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width + 1, r.y + r.height));
-                    evt.consume();
-                    break;
-            }
+            multiWayKeyActions(evt, "SE");
         }
 
         @Override
@@ -462,30 +376,7 @@ public class ResizeHandleKit {
 
         @Override
         public void keyPressed(KeyEvent evt) {
-            Rectangle2D.Double r = getOwner().getBounds();
-
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    if (r.height > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y),
-                                new Point2D.Double(r.x + r.width, r.y + r.height - 1));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height + 1));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_LEFT:
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    evt.consume();
-                    break;
-            }
+            multiWayKeyActions(evt, "S");
         }
 
         @Override
@@ -510,38 +401,7 @@ public class ResizeHandleKit {
 
         @Override
         public void keyPressed(KeyEvent evt) {
-            Rectangle2D.Double r = getOwner().getBounds();
-
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    if (r.height > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x, r.y),
-                                new Point2D.Double(r.x + r.width, r.y + r.height - 1));
-                    }
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height + 1));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_LEFT:
-                    setBounds(
-                            new Point2D.Double(r.x - 1, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if (r.width > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x + 1, r.y),
-                                new Point2D.Double(r.x + r.width, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-            }
+            multiWayKeyActions(evt, "SW");
         }
 
         @Override
@@ -566,30 +426,7 @@ public class ResizeHandleKit {
 
         @Override
         public void keyPressed(KeyEvent evt) {
-            Rectangle2D.Double r = getOwner().getBounds();
-
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_LEFT:
-                    setBounds(
-                            new Point2D.Double(r.x - 1, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if (r.width > 1) {
-                        setBounds(
-                                new Point2D.Double(r.x + 1, r.y),
-                                new Point2D.Double(r.x + r.width, r.y + r.height));
-                    }
-                    evt.consume();
-                    break;
-            }
+            multiWayKeyActions(evt, "W");
         }
 
         @Override
