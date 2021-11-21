@@ -27,6 +27,7 @@ import org.jhotdraw.gui.plaf.palette.*;
 public class JDisclosureToolBar extends JToolBar {
 
     private JButton disclosureButton;
+    //private JLabel label;
     public final static String DISCLOSURE_STATE_PROPERTY = "disclosureState";
     public final static String DISCLOSURE_STATE_COUNT_PROPERTY = "disclosureStateCount";
 
@@ -37,45 +38,77 @@ public class JDisclosureToolBar extends JToolBar {
     }
 
     private void initComponents() {
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc;
         AbstractButton btn;
-
-        setLayout(new GridBagLayout());
+        //JLabel lbl;
 
         gbc = new GridBagConstraints();
+        setUpGridBagConstraints(gbc, GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE);
+        
         if (disclosureButton == null) {
             btn = new JButton();
-            btn.setUI((PaletteButtonUI) PaletteButtonUI.createUI(btn));
-            btn.setBorderPainted(false);
-            btn.setIcon(new DisclosureIcon());
-            btn.setOpaque(false);
-            disclosureButton = (JButton) btn;
-            disclosureButton.putClientProperty(DisclosureIcon.CURRENT_STATE_PROPERTY, 1);
-            disclosureButton.putClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY, 2);
-            disclosureButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    int newState = ((Integer) disclosureButton.getClientProperty(DisclosureIcon.CURRENT_STATE_PROPERTY) + 1) %
-                            (Integer) disclosureButton.getClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY);
-                    setDisclosureState(newState);
-                }
-            });
+            setUpDisclosureButton(btn);
         } else {
             btn = disclosureButton;
         }
-
-        gbc.gridx = 0;
-        gbc.insets = new Insets(0, 1, 0, 1);
-        gbc.anchor = GridBagConstraints.SOUTHWEST;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weighty = 1d;
-        gbc.weightx = 1d;
+        /*
+         if (label == null) {
+            lbl = new JLabel();
+            lbl.setVisible(false);
+        } else {
+            lbl = label;
+        }
+         */
         add(btn, gbc);
+        //add(lbl, gbc);
 
         putClientProperty(PaletteToolBarUI.TOOLBAR_INSETS_OVERRIDE_PROPERTY, new Insets(0, 0, 0, 0));
         putClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY, new EmptyIcon(10, 8));
     }
 
+    private void setUpGridBagConstraints(GridBagConstraints gbc, int anchorPos, int idFill) {
+        gbc.gridx = 0;
+        gbc.insets = new Insets(0, 1, 0, 1);
+        gbc.anchor = anchorPos;
+        gbc.fill = idFill;
+        gbc.weighty = 1d;
+        gbc.weightx = 1d;
+    }
+
+    private void setUpDisclosureButton(AbstractButton btn) {
+        btn.setUI((PaletteButtonUI) PaletteButtonUI.createUI(btn));
+        btn.setBorderPainted(false);
+        btn.setIcon(new DisclosureIcon());
+        btn.setOpaque(false);
+        disclosureButton = (JButton) btn;
+        disclosureButton.putClientProperty(DisclosureIcon.CURRENT_STATE_PROPERTY, 1);
+        disclosureButton.putClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY, 2);
+        disclosureButton.addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                
+                int newState = ((Integer) disclosureButton.getClientProperty(DisclosureIcon.CURRENT_STATE_PROPERTY) + 1) %
+                        (Integer) disclosureButton.getClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY);
+                setDisclosureState(newState);
+            }
+        });
+    }
+    /*
+    private void setUpLabel(JLabel lbl) {
+      lbl.setOpaque(false);
+      label = (JLabel) lbl;
+      label.addActionListener(new ActionListener() {
+
+          @Override
+          public void actionPerformed(ActionEvent e) {
+              label.setVisible(true);
+              label.setText("LOL");
+
+          }
+      });
+    }
+*/
     public void setDisclosureStateCount(int newValue) {
         int oldValue = getDisclosureStateCount();
         disclosureButton.putClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY, newValue);
@@ -89,7 +122,7 @@ public class JDisclosureToolBar extends JToolBar {
         removeAll();
         JComponent c = getDisclosedComponent(newValue);
         GridBagLayout layout = (GridBagLayout) getLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
+        GridBagConstraints gbc; //= new GridBagConstraints();
         if (c != null) {
             gbc = new GridBagConstraints();
             gbc.gridx = 1;
@@ -98,7 +131,9 @@ public class JDisclosureToolBar extends JToolBar {
             gbc.fill = GridBagConstraints.BOTH;
             gbc.anchor = GridBagConstraints.WEST;
             add(c, gbc);
+            
             gbc = new GridBagConstraints();
+            
             gbc.gridx = 0;
             gbc.weightx = 0d;
             gbc.insets = new Insets(0, 1, 0, 1);
@@ -127,6 +162,8 @@ public class JDisclosureToolBar extends JToolBar {
 
         firePropertyChange(DISCLOSURE_STATE_PROPERTY, oldValue, newValue);
     }
+    
+    
 
     public int getDisclosureStateCount() {
         Integer value = (Integer) disclosureButton.getClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY);
