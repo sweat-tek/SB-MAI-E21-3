@@ -105,6 +105,7 @@ public class ResizeHandleKit {
 
         private int dx,  dy;
         Object geometry;
+        public boolean isNorth, isWest, isSouth, isEast = false;
 
         ResizeHandle(Figure owner, Locator loc) {
             super(owner, loc);
@@ -185,21 +186,22 @@ public class ResizeHandleKit {
             f.changed();
         }
         
-        public void multiWayKeyActions(KeyEvent evt, String dir) { //Function gets key events and which handle is being used as an input
+        @Override
+        public void keyPressed(KeyEvent evt) { //Function gets key events and which handle is being used as an input
             Rectangle2D.Double r = getOwner().getBounds();         // dir stands for direction
             int N,W,S,E,vertical,horizontal,key;
             N=W=S=E=vertical=horizontal=0;
             key=evt.getKeyCode();
             
-                if     (key==KeyEvent.VK_UP)       {vertical = -1;} //if up key is pressed elevate the handle
-                else if(key==KeyEvent.VK_DOWN)     {vertical =  1;} //if down key is pressed lower the handle
-                else if(key==KeyEvent.VK_LEFT)     {horizontal=-1;} //if left key is pressed push handle to left
-                else if(key==KeyEvent.VK_RIGHT)    {horizontal= 1;} //if right key is pressed push handle to right
+                if     (key==KeyEvent.VK_UP)       {vertical = -1;} //if up key is pressed elevate the handle by 1 pixel
+                else if(key==KeyEvent.VK_DOWN)     {vertical =  1;} //if down key is pressed lower the handle by 1 pixel
+                else if(key==KeyEvent.VK_LEFT)     {horizontal=-1;} //if left key is pressed push handle to left by 1 pixel
+                else if(key==KeyEvent.VK_RIGHT)    {horizontal= 1;} //if right key is pressed push handle to right by 1 pixel
 
-                if      (dir=="NW" || dir=="N" || dir=="NE"){N=vertical;}     // If it is a North handle
-                else if (dir=="SW" || dir=="S" || dir=="SE"){S=vertical;}     // If it is a South handle
-                if      (dir=="NW" || dir=="W" || dir=="SW"){W=horizontal;}   // If it is a West handle
-                else if (dir=="NE" || dir=="E" || dir=="SE"){E=horizontal;}   // If it is East handle
+                if      (isNorth){N=vertical;}     // If it is a North handle
+                else if (isSouth){S=vertical;}     // If it is a South handle
+                if      (isWest) {W=horizontal;}   // If it is a West handle
+                else if (isEast) {E=horizontal;}   // If it is East handle
 
                 setBounds(      //modifies the size
                     new Point2D.Double(r.x+W, r.y+N),
@@ -212,6 +214,7 @@ public class ResizeHandleKit {
 
         NorthEastHandle(Figure owner) {
             super(owner, RelativeLocator.northEast(true));
+            isNorth=isEast=true;
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -219,11 +222,6 @@ public class ResizeHandleKit {
             setBounds(
                     new Point2D.Double(r.x, Math.min(r.y + r.height - 1, p.y)),
                     new Point2D.Double(Math.max(r.x, p.x), r.y + r.height));
-        }
-
-        @Override
-        public void keyPressed(KeyEvent evt) {
-            multiWayKeyActions(evt, "NE");
         }
            
         @Override
@@ -237,6 +235,7 @@ public class ResizeHandleKit {
 
         EastHandle(Figure owner) {
             super(owner, RelativeLocator.east(true));
+            isEast=true;
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -244,11 +243,6 @@ public class ResizeHandleKit {
             setBounds(
                     new Point2D.Double(r.x, r.y),
                     new Point2D.Double(Math.max(r.x + 1, p.x), r.y + r.height));
-        }
-
-        @Override
-        public void keyPressed(KeyEvent evt) {
-            multiWayKeyActions(evt, "E");
         }
 
         @Override
@@ -262,6 +256,7 @@ public class ResizeHandleKit {
 
         NorthHandle(Figure owner) {
             super(owner, RelativeLocator.north(true));
+            isNorth=true;
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -269,11 +264,6 @@ public class ResizeHandleKit {
             setBounds(
                     new Point2D.Double(r.x, Math.min(r.y + r.height - 1, p.y)),
                     new Point2D.Double(r.x + r.width, r.y + r.height));
-        }
-
-        @Override
-        public void keyPressed(KeyEvent evt) {
-            multiWayKeyActions(evt, "N");
         }
         
         @Override
@@ -287,6 +277,7 @@ public class ResizeHandleKit {
 
         NorthWestHandle(Figure owner) {
             super(owner, RelativeLocator.northWest(true));
+            isNorth=isWest=true;
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -294,11 +285,6 @@ public class ResizeHandleKit {
             setBounds(
                     new Point2D.Double(Math.min(r.x + r.width - 1, p.x), Math.min(r.y + r.height - 1, p.y)),
                     new Point2D.Double(r.x + r.width, r.y + r.height));
-        }
-
-        @Override
-        public void keyPressed(KeyEvent evt) {
-            multiWayKeyActions(evt, "NW");
         }
 
         @Override
@@ -312,6 +298,7 @@ public class ResizeHandleKit {
 
         SouthEastHandle(Figure owner) {
             super(owner, RelativeLocator.southEast(true));
+            isSouth=isEast=true;
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -319,11 +306,6 @@ public class ResizeHandleKit {
             setBounds(
                     new Point2D.Double(r.x, r.y),
                     new Point2D.Double(Math.max(r.x + 1, p.x), Math.max(r.y + 1, p.y)));
-        }
-
-        @Override
-        public void keyPressed(KeyEvent evt) {
-            multiWayKeyActions(evt, "SE");
         }
 
         @Override
@@ -337,6 +319,7 @@ public class ResizeHandleKit {
 
         SouthHandle(Figure owner) {
             super(owner, RelativeLocator.south(true));
+            isSouth=true;
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -344,11 +327,6 @@ public class ResizeHandleKit {
             setBounds(
                     new Point2D.Double(r.x, r.y),
                     new Point2D.Double(r.x + r.width, Math.max(r.y + 1, p.y)));
-        }
-
-        @Override
-        public void keyPressed(KeyEvent evt) {
-            multiWayKeyActions(evt, "S");
         }
 
         @Override
@@ -362,6 +340,7 @@ public class ResizeHandleKit {
 
         SouthWestHandle(Figure owner) {
             super(owner, RelativeLocator.southWest(true));
+            isSouth=isWest=true;
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -369,11 +348,6 @@ public class ResizeHandleKit {
             setBounds(
                     new Point2D.Double(Math.min(r.x + r.width - 1, p.x), r.y),
                     new Point2D.Double(r.x + r.width, Math.max(r.y + 1, p.y)));
-        }
-
-        @Override
-        public void keyPressed(KeyEvent evt) {
-            multiWayKeyActions(evt, "SW");
         }
 
         @Override
@@ -387,6 +361,7 @@ public class ResizeHandleKit {
 
         WestHandle(Figure owner) {
             super(owner, RelativeLocator.west(true));
+            isWest=true;
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -394,11 +369,6 @@ public class ResizeHandleKit {
             setBounds(
                     new Point2D.Double(Math.min(r.x + r.width - 1, p.x), r.y),
                     new Point2D.Double(r.x + r.width, r.y + r.height));
-        }
-
-        @Override
-        public void keyPressed(KeyEvent evt) {
-            multiWayKeyActions(evt, "W");
         }
 
         @Override
