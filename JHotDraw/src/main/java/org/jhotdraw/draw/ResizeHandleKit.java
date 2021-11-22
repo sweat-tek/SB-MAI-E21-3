@@ -185,54 +185,26 @@ public class ResizeHandleKit {
             f.changed();
         }
         
-        public void multiWayKeyActions(KeyEvent evt, String C) { //Function gets key events and which handle is being used as an input
-            Rectangle2D.Double r = getOwner().getBounds();
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP: // When Up Arrow Key is Pressed
-                    if(C=="NW" || C=="N" || C=="NE"){ // If it is a North handle
-                        setBounds(
-                            new Point2D.Double(r.x, r.y - 1),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));}
-                    else if(r.height > 1 && C=="SW" || C=="S" || C=="SE"){  // If it is a South handle
-                        setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height - 1));}
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_DOWN: // When Down Arrow Key is Pressed
-                    if(r.height > 1 && C=="NW" || C=="N" || C=="NE"){ // If it is a North handle
-                        setBounds(
-                            new Point2D.Double(r.x, r.y + 1),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));}
-                    else if(C=="SW" || C=="S" || C=="SE"){ // If it is a South handle
-                        setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height + 1));}
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_LEFT: // When Left Arrow Key is Pressed
-                    if(C=="NW" || C=="W" || C=="SW"){  // If it is a West handle
-                        setBounds(
-                            new Point2D.Double(r.x - 1, r.y),
-                            new Point2D.Double(r.x + r.width, r.y + r.height));}
-                    else if(r.width > 1 && C=="NE" || C=="E" || C=="SE"){ // If it is a East handle
-                        setBounds(
-                                new Point2D.Double(r.x, r.y),
-                                new Point2D.Double(r.x + r.width - 1, r.y + r.height));}
-                    evt.consume();
-                    break;
-                case KeyEvent.VK_RIGHT: // When Right Arrow Key is Pressed
-                    if(C=="NW" || C=="W" || C=="SW"){ // If it is a West handle
-                        setBounds(
-                                new Point2D.Double(r.x + 1, r.y),
-                                new Point2D.Double(r.x + r.width, r.y + r.height));}
-                    else if(r.width > 1 && C=="NE" || C=="E" || C=="SE"){ // If it is a East handle
-                        setBounds(
-                            new Point2D.Double(r.x, r.y),
-                            new Point2D.Double(r.x + r.width + 1, r.y + r.height));}
-                    evt.consume();
-                    break;
-            }
+        public void multiWayKeyActions(KeyEvent evt, String dir) { //Function gets key events and which handle is being used as an input
+            Rectangle2D.Double r = getOwner().getBounds();         // dir stands for direction
+            int N,W,S,E,vertical,horizontal,key;
+            N=W=S=E=vertical=horizontal=0;
+            key=evt.getKeyCode();
+            
+                if     (key==KeyEvent.VK_UP)       {vertical = -1; horizontal= 0;} //if up key is pressed elevate the handle
+                else if(key==KeyEvent.VK_DOWN)     {vertical =  1; horizontal= 0;} //if down key is pressed lower the handle
+                else if(key==KeyEvent.VK_LEFT)     {vertical =  0; horizontal=-1;} //if left key is pressed push handle to left
+                else if(key==KeyEvent.VK_RIGHT)    {vertical =  0; horizontal= 1;} //if right key is pressed push handle to right
+
+                if      (dir=="NW" || dir=="N" || dir=="NE"){N=vertical;}     // If it is a North handle
+                else if (dir=="SW" || dir=="S" || dir=="SE"){S=vertical;}     // If it is a South handle
+                if      (dir=="NW" || dir=="W" || dir=="SW"){W=horizontal;}   // If it is a West handle
+                else if (dir=="NE" || dir=="E" || dir=="SE"){E=horizontal;}   // If it is East handle
+
+                setBounds(      //modifies the size
+                    new Point2D.Double(r.x+W, r.y+N),
+                    new Point2D.Double(r.x+E + r.width, r.y + r.height+S));
+                evt.consume();
         }
     }
 
