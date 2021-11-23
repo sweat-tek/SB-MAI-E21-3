@@ -29,6 +29,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * <br>1.1 2008-02-28 Only resize a figure, if it is transformable. 
  * <br>1.0 2007-04-14 Created.
  */
+        
 public class ResizeHandleKit {
 
     private final static boolean DEBUG = false;
@@ -42,10 +43,10 @@ public class ResizeHandleKit {
      * figure and adds them to the provided collection.
      */
     static public void addCornerResizeHandles(Figure f, Collection<Handle> handles) {
-        handles.add(southEast(f));
-        handles.add(southWest(f));
-        handles.add(northEast(f));
-        handles.add(northWest(f));
+        handles.add(new SouthEastHandle(f));
+        handles.add(new SouthWestHandle(f));
+        handles.add(new NorthEastHandle(f));
+        handles.add(new NorthWestHandle(f));
     }
 
     /**
@@ -53,10 +54,10 @@ public class ResizeHandleKit {
      * the north, south, east, and west of the figure.
      */
     static public void addEdgeResizeHandles(Figure f, Collection<Handle> handles) {
-        handles.add(south(f));
-        handles.add(north(f));
-        handles.add(east(f));
-        handles.add(west(f));
+        handles.add(new SouthHandle(f));
+        handles.add(new NorthHandle(f));
+        handles.add(new EastHandle(f));
+        handles.add(new WestHandle(f));
     }
 
     /**
@@ -68,47 +69,16 @@ public class ResizeHandleKit {
         addCornerResizeHandles(f, handles);
         addEdgeResizeHandles(f, handles);
     }
-
-    static public Handle south(Figure owner) {
-        return new SouthHandle(owner);
-    }
-
-    static public Handle southEast(Figure owner) {
-        return new SouthEastHandle(owner);
-    }
-
-    static public Handle southWest(Figure owner) {
-        return new SouthWestHandle(owner);
-    }
-
-    static public Handle north(Figure owner) {
-        return new NorthHandle(owner);
-    }
-
-    static public Handle northEast(Figure owner) {
-        return new NorthEastHandle(owner);
-    }
-
-    static public Handle northWest(Figure owner) {
-        return new NorthWestHandle(owner);
-    }
-
-    static public Handle east(Figure owner) {
-        return new EastHandle(owner);
-    }
-
-    static public Handle west(Figure owner) {
-        return new WestHandle(owner);
-    }
-
+    
     private static class ResizeHandle extends LocatorHandle {
 
         private int dx,  dy;
         Object geometry;
-        public boolean isNorth, isWest, isSouth, isEast = false;
+        public boolean isNorth, isWest, isSouth, isEast;
 
         ResizeHandle(Figure owner, Locator loc) {
             super(owner, loc);
+            isNorth = isWest = isSouth = isEast = false;
         }
 
         @Override
@@ -189,14 +159,14 @@ public class ResizeHandleKit {
         @Override
         public void keyPressed(KeyEvent evt) { //Function gets key events and which handle is being used as an input
             Rectangle2D.Double r = getOwner().getBounds();         // dir stands for direction
-            int N,W,S,E,vertical,horizontal,key;
+            int N,W,S,E,vertical,horizontal,pressedKey;
             N=W=S=E=vertical=horizontal=0;
-            key=evt.getKeyCode();
+            pressedKey=evt.getKeyCode();
             
-                if     (key==KeyEvent.VK_UP)       {vertical = -1;} //if up key is pressed elevate the handle by 1 pixel
-                else if(key==KeyEvent.VK_DOWN)     {vertical =  1;} //if down key is pressed lower the handle by 1 pixel
-                else if(key==KeyEvent.VK_LEFT)     {horizontal=-1;} //if left key is pressed push handle to left by 1 pixel
-                else if(key==KeyEvent.VK_RIGHT)    {horizontal= 1;} //if right key is pressed push handle to right by 1 pixel
+                if     (pressedKey==KeyEvent.VK_UP)       {vertical = -1;} //if up key is pressed elevate the handle by 1 pixel
+                else if(pressedKey==KeyEvent.VK_DOWN)     {vertical =  1;} //if down key is pressed lower the handle by 1 pixel
+                else if(pressedKey==KeyEvent.VK_LEFT)     {horizontal=-1;} //if left key is pressed push handle to left by 1 pixel
+                else if(pressedKey==KeyEvent.VK_RIGHT)    {horizontal= 1;} //if right key is pressed push handle to right by 1 pixel
 
                 if      (isNorth){N=vertical;}     // If it is a North handle
                 else if (isSouth){S=vertical;}     // If it is a South handle
