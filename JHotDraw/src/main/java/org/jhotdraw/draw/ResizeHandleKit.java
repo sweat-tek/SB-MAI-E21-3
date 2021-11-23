@@ -80,6 +80,15 @@ public class ResizeHandleKit {
             super(owner, loc);
             isNorth = isWest = isSouth = isEast = false;
         }
+        
+        public void setDir(String dir){
+            for(int i=0; i < dir.length();++i){
+                if     (dir.charAt(i)=='N'){isNorth=true;}
+                else if(dir.charAt(i)=='S'){isSouth=true;}
+                if     (dir.charAt(i)=='W'){isWest=true;}
+                else if(dir.charAt(i)=='E'){isEast=true;}
+            }
+        }
 
         @Override
         public String getToolTipText(Point p) {
@@ -158,7 +167,7 @@ public class ResizeHandleKit {
         
         @Override
         public void keyPressed(KeyEvent evt) { //Function gets key events and which handle is being used as an input
-            Rectangle2D.Double r = getOwner().getBounds();         // dir stands for direction
+            Rectangle2D.Double r = getOwner().getBounds();
             int N,W,S,E,vertical,horizontal,pressedKey;
             N=W=S=E=vertical=horizontal=0;
             pressedKey=evt.getKeyCode();
@@ -184,7 +193,7 @@ public class ResizeHandleKit {
 
         NorthEastHandle(Figure owner) {
             super(owner, RelativeLocator.northEast(true));
-            isNorth=isEast=true;
+            setDir("NE");
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -205,7 +214,7 @@ public class ResizeHandleKit {
 
         EastHandle(Figure owner) {
             super(owner, RelativeLocator.east(true));
-            isEast=true;
+            setDir("E");
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -226,7 +235,7 @@ public class ResizeHandleKit {
 
         NorthHandle(Figure owner) {
             super(owner, RelativeLocator.north(true));
-            isNorth=true;
+            setDir("N");
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -247,7 +256,7 @@ public class ResizeHandleKit {
 
         NorthWestHandle(Figure owner) {
             super(owner, RelativeLocator.northWest(true));
-            isNorth=isWest=true;
+            setDir("NW");
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -268,7 +277,7 @@ public class ResizeHandleKit {
 
         SouthEastHandle(Figure owner) {
             super(owner, RelativeLocator.southEast(true));
-            isSouth=isEast=true;
+            setDir("SE");
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -289,7 +298,7 @@ public class ResizeHandleKit {
 
         SouthHandle(Figure owner) {
             super(owner, RelativeLocator.south(true));
-            isSouth=true;
+            setDir("S");
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -310,7 +319,7 @@ public class ResizeHandleKit {
 
         SouthWestHandle(Figure owner) {
             super(owner, RelativeLocator.southWest(true));
-            isSouth=isWest=true;
+            setDir("SW");
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -331,7 +340,7 @@ public class ResizeHandleKit {
 
         WestHandle(Figure owner) {
             super(owner, RelativeLocator.west(true));
-            isWest=true;
+            setDir("W");
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
