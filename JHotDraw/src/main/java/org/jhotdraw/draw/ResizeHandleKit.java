@@ -37,7 +37,7 @@ public class ResizeHandleKit {
     /** Creates a new instance. */
     public ResizeHandleKit() {
     }
-
+    
     /**
      * Creates handles for each corner of a
      * figure and adds them to the provided collection.
@@ -64,7 +64,7 @@ public class ResizeHandleKit {
      * Fills the given Vector with handles at each
      * the north, south, east, and west of the figure.
      */
-    static public void addResizeHandles(Figure f, Collection<Handle> handles) {
+    static public void addResizeHandles(Figure f, Collection<Handle> handles){
         handles.add(new BoundsOutlineHandle(f));
         addCornerResizeHandles(f, handles);
         addEdgeResizeHandles(f, handles);
@@ -74,20 +74,27 @@ public class ResizeHandleKit {
 
         private int dx,  dy;
         Object geometry;
-        public boolean isNorth, isWest, isSouth, isEast;
+        private boolean isNorth, isWest, isSouth, isEast;
 
         ResizeHandle(Figure owner, Locator loc) {
             super(owner, loc);
             isNorth = isWest = isSouth = isEast = false;
         }
         
-        public void setDir(String dir){
-            for(int i=0; i < dir.length();++i){
-                if     (dir.charAt(i)=='N'){isNorth=true;}
-                else if(dir.charAt(i)=='S'){isSouth=true;}
-                if     (dir.charAt(i)=='W'){isWest=true;}
-                else if(dir.charAt(i)=='E'){isEast=true;}
-            }
+        public void setDirNorth(boolean isDir){
+            isNorth=isDir;
+        }
+        
+        public void setDirWest(boolean isDir){
+            isWest=isDir;
+        }
+        
+        public void setDirSouth(boolean isDir){
+            isSouth=isDir;
+        }
+        
+        public void setDirEast(boolean isDir){
+            isEast=isDir;
         }
 
         @Override
@@ -193,7 +200,7 @@ public class ResizeHandleKit {
 
         NorthEastHandle(Figure owner) {
             super(owner, RelativeLocator.northEast(true));
-            setDir("NE");
+            setDirNorth(true); setDirEast(true);
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -214,7 +221,7 @@ public class ResizeHandleKit {
 
         EastHandle(Figure owner) {
             super(owner, RelativeLocator.east(true));
-            setDir("E");
+            setDirEast(true);
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -235,7 +242,7 @@ public class ResizeHandleKit {
 
         NorthHandle(Figure owner) {
             super(owner, RelativeLocator.north(true));
-            setDir("N");
+            setDirNorth(true);
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -256,7 +263,7 @@ public class ResizeHandleKit {
 
         NorthWestHandle(Figure owner) {
             super(owner, RelativeLocator.northWest(true));
-            setDir("NW");
+            setDirNorth(true); setDirWest(true);
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -277,7 +284,7 @@ public class ResizeHandleKit {
 
         SouthEastHandle(Figure owner) {
             super(owner, RelativeLocator.southEast(true));
-            setDir("SE");
+            setDirSouth(true); setDirEast(true);
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -298,7 +305,7 @@ public class ResizeHandleKit {
 
         SouthHandle(Figure owner) {
             super(owner, RelativeLocator.south(true));
-            setDir("S");
+            setDirSouth(true);
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -319,7 +326,7 @@ public class ResizeHandleKit {
 
         SouthWestHandle(Figure owner) {
             super(owner, RelativeLocator.southWest(true));
-            setDir("SW");
+            setDirSouth(true); setDirWest(true);
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
@@ -340,7 +347,7 @@ public class ResizeHandleKit {
 
         WestHandle(Figure owner) {
             super(owner, RelativeLocator.west(true));
-            setDir("W");
+            setDirWest(true);
         }
 
         protected void trackStepNormalized(Point2D.Double p) {
