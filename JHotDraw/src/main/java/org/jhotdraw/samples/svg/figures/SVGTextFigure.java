@@ -72,6 +72,7 @@ public class SVGTextFigure
     // DRAWING
     protected void drawText(java.awt.Graphics2D g) {
     }
+    
     protected void drawFill(Graphics2D g) {
         g.fill(getTextShape());
     }

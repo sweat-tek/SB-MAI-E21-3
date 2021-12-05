@@ -74,7 +74,7 @@ public class OpenAction extends AbstractApplicationAction {
             }
             JFileChooser fileChooser = getFileChooser(view);
             if (fileChooser.showOpenDialog(app.getComponent()) == JFileChooser.APPROVE_OPTION) {
-                app.show(view);
+                app.displayFrameView(view);
                 openFile(fileChooser, view);
             } else {
                 if (removeMe) {

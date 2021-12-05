@@ -64,6 +64,7 @@ public class SVGTextAreaFigure extends SVGAttributedFigure
     }
     // DRAWING
 
+    //REFUSED BEQUEST
     @Override
     protected void drawText(java.awt.Graphics2D g) {
     }

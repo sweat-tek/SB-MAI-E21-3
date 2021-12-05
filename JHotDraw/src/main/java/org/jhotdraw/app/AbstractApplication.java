@@ -71,7 +71,7 @@ public abstract class AbstractApplication extends AbstractBean implements Applic
         final View p = createView();
         add(p);
         p.setEnabled(false);
-        show(p);
+        displayFrameView(p);
         p.execute(new Worker() {
 
             public Object construct() {
@@ -165,7 +165,7 @@ public abstract class AbstractApplication extends AbstractBean implements Applic
     public void remove(View p) {
         hide(p);
         int oldCount = views.size();
-        views.remove(p);
+        views.remove(p);  //removes from LinkedList of views
         p.setApplication(null);
         firePropertyChange(VIEW_COUNT_PROPERTY, oldCount, views.size());
     }

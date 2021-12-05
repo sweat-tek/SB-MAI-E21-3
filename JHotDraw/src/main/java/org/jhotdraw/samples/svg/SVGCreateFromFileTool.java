@@ -124,7 +124,7 @@ public class SVGCreateFromFileTool extends CreationTool {
                 worker = new Worker() {
 
                     public Object construct() {
-                        Drawing drawing = new DefaultDrawing();
+                        Drawing drawing = new QuadTreeDrawing();
                         try {
                             InputFormat in = (file.getName().toLowerCase().endsWith(".svg")) ? new SVGInputFormat() : new SVGZInputFormat();
                             in.read(file, drawing);

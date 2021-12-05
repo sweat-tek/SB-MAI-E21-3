@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import org.jhotdraw.draw.*;
+import org.jhotdraw.geom.Geom;
 import org.jhotdraw.samples.svg.*;
 import org.jhotdraw.xml.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
@@ -30,7 +31,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * @version 1.0.1 2007-07-28 Bounds were not computed correctly. 
  * <br>1.0 July 8, 2006 Created.
  */
-public class SVGGroupFigure extends GroupFigure implements SVGFigure {
+public class SVGGroupFigure extends AbstractCompositeFigure implements SVGFigure {
 
     private HashMap<AttributeKey, Object> attributes = new HashMap<AttributeKey, Object>();
 
@@ -38,12 +39,27 @@ public class SVGGroupFigure extends GroupFigure implements SVGFigure {
     public SVGGroupFigure() {
         SVGAttributeKeys.setDefaults(this);
     }
+    
+    //This part of the code was from the GroupFigureClass
+    /*
+     public boolean canConnect() {
+        return true;
+    }
+     */
+    
+    /*
+     * FIXME Invoke chop on each child and return the closest point.
+     
+    public Point2D.Double chop(Point2D.Double from) {
+        Rectangle2D.Double r = getBounds();
+        return Geom.angleToPoint(r, Geom.pointToAngle(r, from));
+    }
+    */
 
+    
     @Override
     public <T> void setAttribute(AttributeKey<T> key, T value) {
-        if (key == OPACITY) {
-            attributes.put(key, value);
-        } else if (key == LINK || key == LINK_TARGET) {
+        if (key == OPACITY || key == LINK || key == LINK_TARGET) {
             attributes.put(key, value);
         } else {
             super.setAttribute(key, value);
@@ -178,5 +194,14 @@ public class SVGGroupFigure extends GroupFigure implements SVGFigure {
         SVGGroupFigure that = (SVGGroupFigure) super.clone();
         that.attributes = new HashMap<AttributeKey, Object>(this.attributes);
         return that;
+    }
+
+    
+    public void addCompositeFigureListener(CompositeFigureListener listener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void removeCompositeFigureListener(CompositeFigureListener listener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

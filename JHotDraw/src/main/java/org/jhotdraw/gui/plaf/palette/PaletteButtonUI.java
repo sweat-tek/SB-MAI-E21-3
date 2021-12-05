@@ -27,21 +27,24 @@ import javax.swing.plaf.basic.*;
  */
 public class PaletteButtonUI extends BasicButtonUI {
     // Shared UI object
-    private final static PaletteButtonUI buttonUI = new PaletteButtonUI();
+    private static final PaletteButtonUI buttonUI = new PaletteButtonUI();
 
+
+    private PaletteButtonUI() {}
+    
+    public static ComponentUI createUI() {
+        return buttonUI;
+    }
     // ********************************
     //          Create PLAF
     // ********************************
-    public static ComponentUI createUI(JComponent c) {
-        return buttonUI;
-    }
-
+    
     @Override
     protected void installDefaults(AbstractButton b) {
         super.installDefaults(b);
 
         // load shared instance defaults
-        String pp = getPropertyPrefix();
+        //String pp = getPropertyPrefix();
 
         LookAndFeel.installProperty(b, "opaque", Boolean.FALSE);
 
@@ -50,25 +53,30 @@ public class PaletteButtonUI extends BasicButtonUI {
             b.setMargin(new InsetsUIResource(0, 0, 0, 0));
         }
 
-        PaletteLookAndFeel.installColorsAndFont(b, pp + "background",
-                pp + "foreground", pp + "font");
-        PaletteLookAndFeel.installBorder(b, pp + "border");
+        PaletteLookAndFeel.installColorsAndFont(b, getPropertyPrefix() + "background",
+                getPropertyPrefix() + "foreground", getPropertyPrefix() + "font");
+        PaletteLookAndFeel.installBorder(b, getPropertyPrefix() + "border");
 
-        Object rollover = UIManager.get(pp + "rollover");
-        if (rollover != null) {
-            LookAndFeel.installProperty(b, "rolloverEnabled", rollover);
-        }
+        setRollover(b);
         
         b.setFocusable(false);
     }
 
+    private void setRollover(AbstractButton b) {
+        Object rollover = UIManager.get(getPropertyPrefix() + "rollover");
+        if (rollover != null) {
+            LookAndFeel.installProperty(b, "rolloverEnabled", rollover);
+        }
+    }
+
+    //Paint Border responsible for painting a grid for component, a background of each chosen tool
     @Override
     public void paint(Graphics g, JComponent c) {
         AbstractButton button = (AbstractButton) c;
         if (button.isBorderPainted() && (c.getBorder() instanceof BackdropBorder)) {
-            BackdropBorder bb = (BackdropBorder) c.getBorder();
-            bb.getBackdropBorder().paintBorder(c, g, 0, 0, c.getWidth(), c.getHeight());
+           BackdropBorder bb = (BackdropBorder) c.getBorder();
+           bb.getBackdropBorder().paintBorder(c, g, 0, 0, c.getWidth(), c.getHeight());
         }
-        super.paint(g, c);
+       super.paint(g, c);    //paint a proper image to a button
     }
 }

@@ -60,6 +60,6 @@ public class NewAction extends AbstractApplicationAction {
                 newP.clear();
             }
         });
-        app.show(newP);
+        app.displayFrameView(newP);
     }
 }

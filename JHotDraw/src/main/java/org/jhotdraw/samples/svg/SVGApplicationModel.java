@@ -56,9 +56,9 @@ public class SVGApplicationModel extends DefaultApplicationModel {
     }
 
     public DefaultDrawingEditor getSharedEditor() {
-        if (sharedEditor == null) {
-            sharedEditor = new DefaultDrawingEditor();
-        }
+      if (sharedEditor == null) {
+        sharedEditor = new DefaultDrawingEditor();
+      }
         return sharedEditor;
     }
 
@@ -103,12 +103,12 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         a.add(null); // separator
         a.add(GroupAction.create(editor, new SVGGroupFigure()));
         a.add(UngroupAction.create(editor, new SVGGroupFigure()));
-        a.add(new CombineAction(editor));
-        a.add(new SplitAction(editor));
+        a.add(CombineAction.create(editor));
+        a.add(SplitAction.create(editor));
 
         a.add(null); // separator
-        a.add(new BringToFrontAction(editor));
-        a.add(new SendToBackAction(editor));
+        a.add(BringToFrontAction.create(editor));
+        a.add(SendToBackAction.create(editor));
 
         return a;
     }

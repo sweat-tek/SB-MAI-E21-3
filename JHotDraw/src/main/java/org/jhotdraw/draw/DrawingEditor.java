@@ -65,11 +65,11 @@ public interface DrawingEditor {
     /**
      * The property name for the active view property.
      */
-    public final static String ACTIVE_VIEW_PROPERTY = "activeView";   
+    public static final  String ACTIVE_VIEW_PROPERTY = "activeView";   
     /**
      * The property name for the active tool property.
      */
-    public final static String TOOL_PROPERTY = "tool";   
+    public static final String TOOL_PROPERTY = "tool";   
     
     /**
      * Gets the editor's current drawing.
@@ -113,7 +113,7 @@ public interface DrawingEditor {
     /**
      * Calls deactivate on the previously active tool of this drawing editor.
      * Calls activate on the provided tool.
-     * Forwards all mouse, mouse moation and keyboard events that occur on the
+     * Forwards all mouse, mouse motion and keyboard events that occur on the
      * DrawingView to the provided tool.
      * <p>
      * This is a bound property.

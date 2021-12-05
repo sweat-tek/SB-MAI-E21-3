@@ -2,7 +2,7 @@
  * @(#)AbstractAttributedCompositeFigure.java  2.0 2007-05-18
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors.
+ * and all its contributors.``
  * All rights reserved.
  *
  * The copyright of this software is owned by the authors and  
@@ -31,7 +31,7 @@ import org.jhotdraw.xml.DOMOutput;
  * <br>1.0 July 9, 2006 Created.
  */
 public abstract class AbstractAttributedCompositeFigure extends AbstractCompositeFigure {
-
+    
     private HashMap<AttributeKey, Object> attributes = new HashMap<AttributeKey, Object>();
     /**
      * Forbidden attributes can't be set by the setAttribute() operation.
@@ -42,7 +42,8 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
     /** Creates a new instance. */
     public AbstractAttributedCompositeFigure() {
     }
-
+    
+    //to samo co w AbstractAttributedFigure
     public void setAttributeEnabled(AttributeKey key, boolean b) {
         if (forbiddenAttributes == null) {
             forbiddenAttributes = new HashSet<AttributeKey>();
@@ -54,10 +55,13 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
         }
     }
 
+     //to samo co AbstractAttributedFigure
     public boolean isAttributeEnabled(AttributeKey key) {
         return forbiddenAttributes == null || !forbiddenAttributes.contains(key);
     }
 
+    //CHYBA DZIAŁA TAK SAMO jak w  AbstractAttributedFigure
+    // setAttribute(entry.getKey(), entry.getValue());  vs  entry.getKey().basicSet(this, entry.getValue());
     @SuppressWarnings("unchecked")
     public void setAttributes(Map<AttributeKey, Object> map) {
         for (Map.Entry<AttributeKey, Object> entry : map.entrySet()) {
@@ -65,6 +69,7 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
         }
     }
 
+    //to samo co AbstractAttributedFigure
     @Override
     public Map<AttributeKey, Object> getAttributes() {
         return new HashMap<AttributeKey, Object>(attributes);
@@ -75,6 +80,8 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
      * AttributeKey name and semantics are defined by the class implementing
      * the figure interface.
      */
+    
+    //to samo co setAttribute() w AbstractAttributedFigure
     @Override
     public <T> void setAttribute(AttributeKey<T> key, T newValue) {
         if (forbiddenAttributes == null || !forbiddenAttributes.contains(key)) {
@@ -83,7 +90,7 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
             fireAttributeChanged(key, oldValue, newValue);
         }
     }
-
+    
     protected <T> void setAttributeOnChildren(AttributeKey<T> key, T newValue) {
         for (Figure child : getChildren()) {
             key.basicSet(child, newValue);
@@ -93,11 +100,16 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
     /**
      * Gets an attribute from the figure.
      */
+    //to samo co AbstractAttributedFigure
     @Override
     public <T> T getAttribute(AttributeKey<T> key) {
         return hasAttribute(key) ? key.get(attributes) : key.getDefaultValue();
     }
 
+    
+    //NOWE, ZWRACAMY LISTE HASZ MAP dla każdej z figur wkompozycji 
+    //w AbstractAttributedFigure zwracamy HASZMAPE attrybutów dla figury
+    //można zworicic obiekt listy ktora przechowuje haszmapy dla dzieci (tworzymy im haszmapy korzystając z metody z !!AbstractAttributedFigure)
     @Override
     public Object getAttributesRestoreData() {
         LinkedList<Object> list = new LinkedList<Object>();
@@ -108,6 +120,10 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
         return list;
     }
 
+    
+    
+    
+    //NOWE, NIE to samo co AbstractAttributedFigure, wywołane dla wszystkich dzieci w kompozycji
     @Override
     @SuppressWarnings("unchecked")
     public void restoreAttributesTo(Object restoreData) {
@@ -118,7 +134,9 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
             child.restoreAttributesTo(i.next());
         }
     }
-
+    
+    
+    //to samo co draw() w  AbstractAttributedFigure
     public void drawFigure(Graphics2D g) {
         drawChildren(g);
         if (AttributeKeys.FILL_COLOR.get(this) != null) {
@@ -145,38 +163,47 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
         }
     }
 
+    //NOWA cecha dla kompozycji figur!! NIE MA W  AbstractAttributedFigure
     protected void drawChildren(Graphics2D g) {
         for (Figure child : getChildren()) {
             child.draw(g);
         }
     }
-
+    
+    //to samo co AbstractAttributedFigure
     public Stroke getStroke() {
         return AttributeKeys.getStroke(this);
     }
 
+    //to samo co AbstractAttributedFigure
     public double getStrokeMiterLimitFactor() {
         Number value = (Number) getAttribute(AttributeKeys.STROKE_MITER_LIMIT);
         return (value != null) ? value.doubleValue() : 10f;
     }
 
-    public Rectangle2D.Double getFigureDrawBounds() {
+    //PRAWIE to samo co AbstractAttributedFigure
+    public Rectangle2D.Double getDrawingArea() {
         double width = AttributeKeys.getStrokeTotalWidth(this) / 2d;
         if (STROKE_JOIN.get(this) == BasicStroke.JOIN_MITER) {
             width *= STROKE_MITER_LIMIT.get(this);
         }
+        
         width++;
         Rectangle2D.Double r = getBounds();
         Geom.grow(r, width, width);
         return r;
     }
 
+    
+    // PULL-DOWN METHODS BO NIE UŻYWANE
     /**
      * This method is called by method draw() to draw the fill
      * area of the figure. AttributedFigure configures the Graphics2D
      * object with the FILL_COLOR attribute before calling this method.
      * If the FILL_COLOR attribute is null, this method is not called.
      */
+    
+    //to samo co AbstractAttributedFigure
     protected abstract void drawFill(java.awt.Graphics2D g);
 
     /**
@@ -191,11 +218,15 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
      * the TEXT_COLOR attribute before calling this method.
      * If the TEXT_COLOR attribute is null, this method is not called.
      */
+    
+    //to samo co AbstractAttributedFigure
     protected abstract void drawStroke(java.awt.Graphics2D g);
-
+    
+    //to samo co AbstractAttributedFigure
     protected void drawText(java.awt.Graphics2D g) {
     }
-
+    
+    //to samo co AbstractAttributedFigure
     public AbstractAttributedCompositeFigure clone() {
         AbstractAttributedCompositeFigure that = (AbstractAttributedCompositeFigure) super.clone();
         that.attributes = new HashMap<AttributeKey, Object>(this.attributes);
@@ -204,7 +235,8 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
         }
         return that;
     }
-
+    
+    ////to samo co AbstractAttributedFigure
     protected void writeAttributes(DOMOutput out) throws IOException {
         Figure prototype = (Figure) out.getPrototype();
 
@@ -214,13 +246,16 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
             if (forbiddenAttributes == null || !forbiddenAttributes.contains(key)) {
                 Object prototypeValue = key.get(prototype);
                 Object attributeValue = key.get(this);
+                
+                
                 if (prototypeValue != attributeValue ||
-                        (prototypeValue != null && attributeValue != null &&
-                        !prototypeValue.equals(attributeValue))) {
-                    if (!isElementOpen) {
+                        (prototypeValue != null && attributeValue != null)) {
+                    
+                    if (!isElementOpen  && !prototypeValue.equals(attributeValue)) {
                         out.openElement("a");
                         isElementOpen = true;
                     }
+                    
                     out.openElement(key.getKey());
                     out.writeObject(entry.getValue());
                     out.closeElement();
@@ -232,6 +267,7 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
         }
     }
 
+    // PRAWIE to samo co AbstractAttributedFigure
     @SuppressWarnings("unchecked")
     protected void readAttributes(DOMInput in) throws IOException {
         if (in.getElementCount("a") > 0) {
@@ -242,7 +278,7 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
                 Object value = in.readObject();
                 AttributeKey key = getAttributeKey(name);
                 if (key != null && key.isAssignable(value)) {
-                    if (forbiddenAttributes == null || !forbiddenAttributes.contains(key)) {
+                    if(forbiddenAttributes == null || !forbiddenAttributes.contains(key)) {
                         key.basicSet(this, value);
                     }
                 }
@@ -251,7 +287,8 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
             in.closeElement();
         }
     }
-
+    
+    //to samo co AbstractAttributedFigure
     protected AttributeKey getAttributeKey(String name) {
         return AttributeKeys.supportedAttributeMap.get(name);
     }
@@ -259,6 +296,9 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
     /**
      * Applies all attributes of this figure to that figure.
      */
+    //
+
+    //to samo co AbstractAttributedFigure
     @SuppressWarnings("unchecked")
     protected void applyAttributesTo(Figure that) {
         for (Map.Entry<AttributeKey, Object> entry : attributes.entrySet()) {
@@ -266,18 +306,26 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
         }
     }
 
+    
+    //do nadpisania
+    //to samo co AbstractCompositeFigure (można nadpisać metode AbstractAttributedFigure)
     @Override
     public void write(DOMOutput out) throws IOException {
         super.write(out);
         writeAttributes(out);
     }
-
+    
+    //do nadpisania
+    //to samo co AbstractCompositeFigure (można nadpisać metode AbstractAttributedFigure)
     @Override
     public void read(DOMInput in) throws IOException {
         super.read(in);
         readAttributes(in);
+        
     }
-
+    
+    
+    //to samo co AbstractAttributedFigure
     public <T> void removeAttribute(AttributeKey<T> key) {
         if (hasAttribute(key)) {
             T oldValue = getAttribute(key);
@@ -286,6 +334,7 @@ public abstract class AbstractAttributedCompositeFigure extends AbstractComposit
         }
     }
 
+    //to samo co AbstractAttributedFigure
     public boolean hasAttribute(AttributeKey key) {
         return attributes.containsKey(key);
     }

@@ -58,7 +58,7 @@ public class ApplyAttributesAction extends AbstractSelectedAction {
         applyAttributes();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") // coloring the figure
     public void applyAttributes() {
         DrawingEditor editor = getEditor();
 

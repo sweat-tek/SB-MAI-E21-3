@@ -28,10 +28,12 @@ import javax.swing.event.ChangeListener;
  * <br>1.0 October 13, 2005 Created.
  */
 public class PreferencesUtil {
-
+    
+/*
     public static void installPrefsHandler(Preferences prefs, String string, JTabbedPane tabbedPane) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
+    */
 
     /** Creates a new instance. */
     private PreferencesUtil() {
@@ -99,11 +101,16 @@ public class PreferencesUtil {
      * @param prefs Preferences for storing/retrieving preferences values.
      * @param name Base name of the preference.
      * @param window The window for which to track preferences.
-     */
+     
+    
+    //default implementation of the method 
+    //UŻYWANA TYLKO WEWNĘTRZNE, NIE MA ZASTOSOWANIA W PROGRAMIE
     public static void installPalettePrefsHandler(final Preferences prefs, final String name, Window window) {
         installPalettePrefsHandler(prefs, name, window, 0);
     }
+    */
 
+    //UŻYWANA TYLKO WEWNĘTRZNE, NIE MA ZASTOSOWANIA W PROGRAMIE
     public static void installPalettePrefsHandler(final Preferences prefs, final String name, Window window, int x) {
         GraphicsConfiguration conf = window.getGraphicsConfiguration();
         Rectangle screenBounds = conf.getBounds();
@@ -117,7 +124,7 @@ public class PreferencesUtil {
         Dimension preferredSize = window.getPreferredSize();
 
         Rectangle bounds = new Rectangle(
-                prefs.getInt(name + ".x", x + screenBounds.x),
+                prefs.getInt(name + ".x", x + screenBounds.x), // ONLY ONE DIFFERENCE to installFramePrefsHandler (x + x.screenBounds.x),  (y + y.screenBounds.y) 
                 prefs.getInt(name + ".y", 0 + screenBounds.y),
                 preferredSize.width,
                 preferredSize.height);
@@ -134,17 +141,18 @@ public class PreferencesUtil {
                 prefs.putInt(name + ".x", evt.getComponent().getX());
                 prefs.putInt(name + ".y", evt.getComponent().getY());
             }
-            /*
+            //IT HAS BEEN COMMENTED OUT
             public void componentResized(ComponentEvent evt) {
             prefs.putInt(name+".width", evt.getComponent().getWidth());
             prefs.putInt(name+".height", evt.getComponent().getHeight());
-            }*/
+            }
         });
 
     }
-
+    
+    
     /**
-     * Installs an intenal frame preferences handler.
+     * Installs an internal frame preferences handler.
      * On first run, sets the frame to its preferred size at the top left
      * corner of the desktop pane.
      * On subsequent runs, sets the frame the last size and location where
@@ -154,6 +162,7 @@ public class PreferencesUtil {
      * @param name Base name of the preference.
      * @param window The window for which to track preferences.
      */
+    //NIE UŻYWANA W KODZIE I PRAWIE TAKA SAMA JAK installFramePrefsHandler
     public static void installInternalFramePrefsHandler(final Preferences prefs, final String name, JInternalFrame window, JDesktopPane desktop) {
         Rectangle screenBounds = desktop.getBounds();
         screenBounds.setLocation(0, 0);
@@ -203,10 +212,11 @@ public class PreferencesUtil {
      * @param name Base name of the preference.
      * @param toolbar The JToolBar for which to track preferences.
      */
-    public static void installToolBarPrefsHandler(final Preferences prefs, final String name, JToolBar toolbar) {
+    
+    public static void installToolBarPrefsHandler(final Preferences prefs, final String name, JToolBar toolbar) {   
         new ToolBarPrefsHandler(toolbar, name, prefs);
-
     }
+    
 
     /**
      * Installs a JTabbedPane preferences handler.

@@ -102,6 +102,8 @@ public class BezierFigure extends AbstractAttributedFigure {
      * By default a ChopDiamondConnector is returned.
      * @see ChopDiamondConnector
      */
+    
+    //SPECULATIVE GENERALITY, DEAD CODE, IN majority f the class -> REFUSED BEQUEST (There are only returning null)
     public Connector findConnector(Point2D.Double p, ConnectionFigure prototype) {
         return new ChopBezierConnector(this);
     }

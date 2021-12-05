@@ -15,6 +15,7 @@ package org.jhotdraw.samples.svg.gui;
 
 import dk.sdu.mmmi.featuretracer.lib.FeatureEntryPoint;
 import java.awt.*;
+
 import java.beans.*;
 import java.util.prefs.*;
 import javax.swing.*;
@@ -29,16 +30,23 @@ import org.jhotdraw.draw.*;
  * @version 2.0 2008-05-24 Reworked to create panels lazily.
  * <br>1.0 2008-04-13 Created.
  */
-public /*abstract*/ class AbstractToolBar extends JDisclosureToolBar {
-
+public abstract class AbstractToolBar extends JDisclosureToolBar {
+    
+    
+    //REFACTORIZATION
+    //there should be a singletons
     protected DrawingEditor editor;
     private JComponent[] panels;
     protected Preferences prefs;
     protected PropertyChangeListener eventHandler;
+    private static final int DEFAULT_DISCLOSURE_STATE = 0;
+    
+    
+    
 
     /** Creates new form. */
     @FeatureEntryPoint(JHotDrawFeatures.TOOL_PALETTE)
-    public AbstractToolBar() {
+    protected AbstractToolBar() {
         initComponents();
         try {
             prefs = Preferences.userNodeForPackage(getClass());
@@ -51,31 +59,30 @@ public /*abstract*/ class AbstractToolBar extends JDisclosureToolBar {
      * doesn't support abstract beans.
      * @return The ID used to retrieve labels and store user preferences.
      */
-    protected String getID() {
-        return "";
-    }
+    protected abstract String getID(); // instead of returning " ", what can triggers some mistakes
 
     /** This should be an abstract method, but the NetBeans GUI builder
      * doesn't support abstract beans.
      */
-    protected void init() {
-    }
-
-    protected PropertyChangeListener getEventHandler() {
+    
+    //protected void init(){}; // we dont use it anywhere, it should be removed// we dont use it anywhere, it should be removed
+    
+    
+//REFACTORING comparing objects  changed from (==) to .equals
+    
+    //only if something happened update (put new disclosure state to  preferences)
+    protected PropertyChangeListener getDisclosureEventHandler() {
         if (eventHandler == null) {
-            eventHandler = new PropertyChangeListener() {
-
-                public void propertyChange(PropertyChangeEvent evt) {
-                    String name = evt.getPropertyName();
-                    if (name == DISCLOSURE_STATE_PROPERTY) {
-                        try {
-                            prefs.putInt(getID() + ".disclosureState", (Integer) evt.getNewValue());
-                        } catch (IllegalStateException e) {
-                            // This happens, due to a bug in Apple's implementation
-                            // of the Preferences class.
-                            System.err.println("Warning AbstractToolBar caught IllegalStateException of Preferences class");
-                            e.printStackTrace();
-                        }
+            eventHandler = (PropertyChangeEvent evt) -> {
+                if (evt.getPropertyName().equals(DISCLOSURE_STATE_PROPERTY)) {
+                    try {
+                        prefs.putInt(getID() + ".disclosureState", (Integer) evt.getNewValue());
+                    } catch (IllegalStateException e) {
+                        // This happens, due to a bug in Apple's implementation
+                        // of the Preferences class.
+                        // SMELL OF CODE use logger instead of System.err.println
+                        //System.err.println("Warning AbstractToolBar caught IllegalStateException of Preferences class");
+                        //e.printStackTrace();
                     }
                 }
             };
@@ -84,15 +91,17 @@ public /*abstract*/ class AbstractToolBar extends JDisclosureToolBar {
     }
 
     public void setEditor(DrawingEditor editor) {
+        
         if (this.editor != null) {
-            this.removePropertyChangeListener(getEventHandler());
+            this.removePropertyChangeListener(getDisclosureEventHandler());
         }
-        this.editor = editor;
+          
         if (editor != null) {
-            init();
-            setDisclosureState(Math.max(0, Math.min(getDisclosureStateCount(), prefs.getInt(getID() + ".disclosureState", getDefaultDisclosureState()))));
-            this.addPropertyChangeListener(getEventHandler());
-        }
+            //init(); it is an empty method it should be removed
+            setDisclosureState(Math.max(0, Math.min(getDisclosureStateCount(), prefs.getInt(getID() + ".disclosureState", DEFAULT_DISCLOSURE_STATE))));
+            this.addPropertyChangeListener(getDisclosureEventHandler());
+            this.editor = editor;
+        } 
     }
 
     public DrawingEditor getEditor() {
@@ -100,70 +109,79 @@ public /*abstract*/ class AbstractToolBar extends JDisclosureToolBar {
     }
 
     @Override
-    final protected JComponent getDisclosedComponent(int state) {
-        if (panels == null) {
+    // divided into createDisclosedComponent and getDisclosedComponent
+    protected final JComponent getDisclosedComponent(int state) {
+        if (panels == null){
             panels = new JPanel[getDisclosureStateCount()];
             for (int i = 0; i < panels.length; i++) {
-                panels[i] = new ProxyPanel();
-            }
+               panels[i] = new ProxyPanel();
+           }
         }
-        return panels[state];
+       return panels[state];
     }
 
-    /*abstract*/ protected JComponent createDisclosedComponent(int state) {
-        return null;
-    }
-
+    
+    //purpose is to replace this method by the above one.s
+    abstract  JComponent createDisclosedComponent(int state); //changed to abstract method, instead of empty one (but it can be a  private void method which creates a component, and it is called in getDosclosedMethod)
+   
+    //CHECK ALL OF THE USAGES and force the subclasses to override createDisclosedComponent2 to finally remove createDisclosedCOmponent to make getDisclosedCOmponent the function responsible for the thing inside this overrided method
     protected int getDefaultDisclosureState() {
-        return 0;
+        return DEFAULT_DISCLOSURE_STATE;
     }
-
+    
+    
     private class ProxyPanel extends JPanel {
 
         private Runnable runner;
-
+        
+       
         public ProxyPanel() {
             setOpaque(false);
-            setBackground(Color.GREEN);
-            // The paint method is only called, if the proxy panel is at least
-            // one pixel wide and high.
-            setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
+            setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));        
         }
+       
 
         @Override
         @FeatureEntryPoint(JHotDrawFeatures.TOOL_PALETTE)
-        public void paint(Graphics g) {
-            super.paint(g);
+        public void paint(Graphics g) { // paint an icon of a tool from Tools
+           super.paint(g);
+            
             final int state = getDisclosureState();
             if (runner == null) {
                 runner = new Runnable() {
 
                     public void run() {
                         try {
-                        // long start = System.currentTimeMillis();
                         panels[state] = createDisclosedComponent(state);
-                        } catch (Throwable t) {
-                            t.printStackTrace();
+
+                        } catch (RuntimeException e) {
                             panels[state]=null;
                         }
-                        // long end = System.currentTimeMillis();
-                        // System.out.println(AbstractToolBar.this.getClass()+" state:"+state+" elapsed:"+(end-start));
+                        
                         JComponent parent = (JComponent) getParent();
+                   
                         if (parent != null) {
                             GridBagLayout layout = (GridBagLayout) parent.getLayout();
                             GridBagConstraints gbc = layout.getConstraints(ProxyPanel.this);
-
+                        
+                                 
                             parent.remove(ProxyPanel.this);
+                            
                             if (getDisclosureState() == state) {
                             if (panels[state] != null) {
                                 parent.add(panels[state], gbc);
+                                
                             } else {
+                                
                                 JPanel empty = new JPanel(new BorderLayout());
                                 empty.setOpaque(false);
                                 parent.add(empty, gbc);
+                                
                             }
                             }
                             parent.revalidate();
+                            
+                            //to sprawia że na widoku na początku mam normalną wielkość component baru
                             ((JComponent) parent.getRootPane().getContentPane()).revalidate();
 
                         }

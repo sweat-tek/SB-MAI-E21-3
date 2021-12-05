@@ -33,8 +33,12 @@ import org.jhotdraw.draw.*;
 public class SendToBackAction extends AbstractSelectedAction {
     
        public static String ID = "edit.sendToBack";
+
+    public static SendToBackAction create(DrawingEditor editor) {
+        return new SendToBackAction(editor);
+    }
     /** Creates a new instance. */
-    public SendToBackAction(DrawingEditor editor) {
+    private SendToBackAction(DrawingEditor editor) {
         super(editor);
         labels.configureAction(this, ID);
     }

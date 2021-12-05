@@ -42,6 +42,7 @@ public class BackdropBorder implements Border {
         return backgroundBorder;
     }
 
+    
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         if (foregroundBorder != null) {
             foregroundBorder.paintBorder(c, g, x, y, width, height);

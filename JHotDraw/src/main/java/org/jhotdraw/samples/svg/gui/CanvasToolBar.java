@@ -34,12 +34,13 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * @version 1.0 2008-05-18 Created.
  */
 public class CanvasToolBar extends AbstractToolBar {
+    
 
     /** Creates new instance. */
     public CanvasToolBar() {
         ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.svg.Labels");
         setName(labels.getString(getID() + ".toolbar"));
-        setDisclosureStateCount(3);
+        setDisclosureStateCount(3); 
     }
 
     @Override
@@ -323,6 +324,8 @@ public class CanvasToolBar extends AbstractToolBar {
     protected String getID() {
         return "canvas";
     }
+    
+   
 
     /** This method is called from within the constructor to
      * initialize the form.

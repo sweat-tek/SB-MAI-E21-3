@@ -573,4 +573,5 @@ public class DefaultFontChooserModel extends AbstractFontChooserModel {
 
     public static class UIResource extends DefaultFontChooserModel implements javax.swing.plaf.UIResource {
     }
+    
 }

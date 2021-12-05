@@ -17,7 +17,6 @@ package org.jhotdraw.samples.svg;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-import org.jhotdraw.draw.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
 
 /**
@@ -256,6 +255,7 @@ public class SVGConstants {
         m.put("bevel", BasicStroke.JOIN_BEVEL);
         SVG_STROKE_LINEJOINS = Collections.unmodifiableMap(m);
     }
+    
     public final static Map<String,Double> SVG_ABSOLUTE_FONT_SIZES;
     static {
         HashMap<String,Double> m = new HashMap<String,Double>();
@@ -283,6 +283,7 @@ public class SVGConstants {
         m.put("end", TextAnchor.END);
         SVG_TEXT_ANCHORS = Collections.unmodifiableMap(m);
     }
+    
     public final static Map<String,TextAlign> SVG_TEXT_ALIGNS;
     static {
         HashMap<String, TextAlign> m = new HashMap<String, TextAlign>();

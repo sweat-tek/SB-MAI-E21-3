@@ -699,7 +699,7 @@ public class SVGInputFormat implements InputFormat {
                 // Load it as a group.
                 if (imageUrl.getFile().endsWith("svg")) {
                     SVGInputFormat svgImage = new SVGInputFormat(factory);
-                    Drawing svgDrawing = new DefaultDrawing();
+                    QuadTreeDrawing svgDrawing = new QuadTreeDrawing();
                     svgImage.read(imageUrl, svgDrawing, true);
                     CompositeFigure svgImageGroup = factory.createG(a);
                     for (Figure f : svgDrawing.getChildren()) {

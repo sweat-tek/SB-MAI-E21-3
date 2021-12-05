@@ -43,9 +43,7 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
     private LinkedList<OutputFormat> outputFormats = new LinkedList<OutputFormat>();
     private final static boolean DEBUG = false;
 
-    /** Creates a new instance. */
-    public AbstractDrawing() {
-    }
+  
 
     public void addUndoableEditListener(UndoableEditListener l) {
         listenerList.add(UndoableEditListener.class, l);
@@ -149,22 +147,4 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
         return this;
     }
 
-    /*@Override
-    public Rectangle2D.Double getDrawingArea() {
-        Rectangle2D.Double drawingArea;
-
-        Dimension2DDouble canvasSize = getCanvasSize();
-        if (canvasSize != null) {
-            drawingArea = new Rectangle2D.Double(
-                    0d, 0d,
-                    canvasSize.width, canvasSize.height);
-        } else {
-            drawingArea = super.getDrawingArea();
-            drawingArea.add(0d, 0d);
-            /*drawingArea = new Rectangle2D.Double(
-                    0d, 0d,
-                    canvasSize.width, canvasSize.height);* /
-        }
-        return drawingArea;
-    }*/
 }

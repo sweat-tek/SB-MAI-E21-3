@@ -29,6 +29,7 @@ import javax.swing.event.*;
  * BasicToolBarUI.
  * <br>1.0 2. April 2004  Created.
  */
+
 public class ToolBarPrefsHandler implements ComponentListener, AncestorListener {
     private JToolBar toolbar;
     private String prefsPrefix;
@@ -40,39 +41,39 @@ public class ToolBarPrefsHandler implements ComponentListener, AncestorListener 
         this.prefsPrefix = prefsPrefix;
         this.prefs = prefs;
         
+        //ORIENTACJA TOOL BARU NAPRAWA
+         if (prefs.getBoolean(prefsPrefix+".isFloating", true)) { //false 
+            makeToolBarFloat();
+        }
         String constraint = prefs.get(prefsPrefix+".constraint", BorderLayout.NORTH);
-        int orientation = (constraint.equals(BorderLayout.NORTH) || constraint.equals(BorderLayout.SOUTH)) ? JToolBar.HORIZONTAL : JToolBar.VERTICAL;
+        int orientation = (constraint.equals(BorderLayout.NORTH) || constraint.equals(BorderLayout.SOUTH)) ? JToolBar.HORIZONTAL : JToolBar.VERTICAL;  
         toolbar.setOrientation(orientation);
         toolbar.getParent().add(constraint, toolbar);
         toolbar.setVisible(prefs.getBoolean(prefsPrefix+".visible", true));
-        /*
-        if (prefs.getBoolean(prefsPrefix+".isFloating", false)) {
-            makeToolBarFloat();
-        }*/
-        
         toolbar.addComponentListener(this);
         toolbar.addAncestorListener(this);
     }
     
-    
-    
-    /*
-     * XXX - This does not work
+   
+   
+     //XXX - This does not work
     private void makeToolBarFloat() {
         BasicToolBarUI ui = (BasicToolBarUI) toolbar.getUI();
-        Window window = SwingUtilities.getWindowAncestor(toolbar);
-        System.out.println("Window Ancestor:"+window+" instanceof Frame:"+(window instanceof Frame));
+        //Window window = SwingUtilities.getWindowAncestor(toolbar);
+        //System.out.println("Window Ancestor:"+window+" instanceof Frame:"+(window instanceof Frame));
         ui.setFloating(true, new Point(
         prefs.getInt(prefsPrefix+".floatingX", 0),
         prefs.getInt(prefsPrefix+".floatingY", 0)
         ));
-        window = SwingUtilities.getWindowAncestor(toolbar);
+    
+        Window window = SwingUtilities.getWindowAncestor(toolbar);
         window.setLocation(
         prefs.getInt(prefsPrefix+".floatingX", 0),
         prefs.getInt(prefsPrefix+".floatingY", 0)
         );
         window.toFront();
-    }*/
+    }
+    
     public void componentHidden(ComponentEvent e) {
         prefs.putBoolean(prefsPrefix+".visible", false);
     }
@@ -80,13 +81,15 @@ public class ToolBarPrefsHandler implements ComponentListener, AncestorListener 
     public void componentMoved(ComponentEvent e) {
         locationChanged();
     }
+    
     private void locationChanged() {
         // FIXME : use reflection to get hold of method 'isFloating'.
+        
         if (toolbar.getUI() instanceof BasicToolBarUI) {
             BasicToolBarUI ui = (BasicToolBarUI) toolbar.getUI();
             boolean floating = ui.isFloating();
             prefs.putBoolean(prefsPrefix+".isFloating", floating);
-            if (floating) {
+            if (floating) { 
                 Window window = SwingUtilities.getWindowAncestor(toolbar);
                 prefs.putInt(prefsPrefix+".floatingX", window.getX());
                 prefs.putInt(prefsPrefix+".floatingY", window.getY());
@@ -98,7 +101,7 @@ public class ToolBarPrefsHandler implements ComponentListener, AncestorListener 
                 if (x == insets.left && y == insets.top) {
                     constraint = (toolbar.getOrientation() == JToolBar.HORIZONTAL) ? BorderLayout.NORTH : BorderLayout.WEST;
                 } else {
-                    constraint = (toolbar.getOrientation() == JToolBar.HORIZONTAL) ? BorderLayout.SOUTH : BorderLayout.EAST;
+                    constraint = (toolbar.getOrientation() == JToolBar.VERTICAL) ? BorderLayout.SOUTH : BorderLayout.EAST; //CHANGE TO VERTICAL FROM HORIZONTAL
                 }
                 prefs.put(prefsPrefix+".constraint", constraint);
             }
@@ -118,18 +121,20 @@ public class ToolBarPrefsHandler implements ComponentListener, AncestorListener 
         }
     }
     
+    
+    //THESE  ARE NOT WORKING BECAUSE  locationchNGED IS NOT wORKING
     public void componentResized(ComponentEvent e) {
+        locationChanged();
+    }
+    
+       public void ancestorAdded(AncestorEvent event) {
         locationChanged();
     }
     
     public void componentShown(ComponentEvent e) {
         prefs.putBoolean(prefsPrefix+".visible", true);
     }
-    
-    public void ancestorAdded(AncestorEvent event) {
-        locationChanged();
-    }
-    
+     
     public void ancestorMoved(AncestorEvent event) {
         if (toolbar.getUI() instanceof BasicToolBarUI) {
             if (((BasicToolBarUI) toolbar.getUI()).isFloating()) {

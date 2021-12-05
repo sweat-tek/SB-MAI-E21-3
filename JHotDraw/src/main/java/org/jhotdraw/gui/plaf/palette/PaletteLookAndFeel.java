@@ -14,9 +14,16 @@
 package org.jhotdraw.gui.plaf.palette;
 
 import java.awt.*;
+import java.awt.event.ContainerListener;
+import java.awt.event.FocusListener;
+import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.logging.Handler;
 import javax.swing.*;
 import javax.swing.UIDefaults.*;
 import javax.swing.border.Border;
+import javax.swing.event.MouseInputListener;
 import javax.swing.plaf.*;
 import javax.swing.plaf.basic.*;
 
@@ -27,20 +34,46 @@ import javax.swing.plaf.basic.*;
  * @version 1.0 Apr 6, 2008 Created.
  */
 public class PaletteLookAndFeel extends BasicLookAndFeel {
-
-    /** 
-     * Shared instance.
-     */
+    
+    private static  final  int FONT_12 = 12;
+    private static  final int FONT_11 = 11;
+    
+    private static final String FONT_UI_RESOURCE = "javax.swing.plaf.FontUIResource";
+    private final Object DIALOG_PLAIN_11 = new ProxyLazyFontValue(FONT_UI_RESOURCE, null, new Font("Dialog Sans", Font.PLAIN, FONT_11));
+    private final Object DIALOG_PLAIN_12 = new ProxyLazyFontValue(FONT_UI_RESOURCE, null, new Font("Dialog Sans", Font.PLAIN, FONT_12));
+    private final Object FIELD_PLAIN_12 = new ProxyLazyFontValue(FONT_UI_RESOURCE, null, new Font("Verdana", Font.PLAIN, FONT_12));
+    private final ColorUIResource TOOLBAR_COLOR = new ColorUIResource(Color.LIGHT_GRAY);
+    private final ColorUIResource TOOLBAR_COLOR_TEXT = new ColorUIResource(Color.black);
+    private final ColorUIResource ERROR_INDICATOR_FGD = new ColorUIResource(0xfe4a41);
+    private final ColorUIResource SELECTION_FGD = new ColorUIResource(Color.BLACK);   
+    private final ColorUIResource SELECTION_BGD = new ColorUIResource(0xb5d5ff);
+     
+    private final Object BTN_BORDER = new BackdropBorder.UIResource(new PaletteButtonBorder());
+    private final Object TXT_BORDER = new BackdropBorder.UIResource(new PaletteTextComponentBorder());
+    private final InsetsUIResource ZERO_INSETS = new InsetsUIResource(0, 0, 0, 0);
+    private final Object RIPPON_BORDER = new UIDefaults.ProxyLazyValue("javax.swing.border.MatteBorder", new Object[] {new Insets(1,0,0,0), new Color(0xa5a5a5)});
+    private final Object SCROLLPANE_BORDER = new UIDefaults.ProxyLazyValue("javax.swing.border.MatteBorder", new Object[] {new Insets(1,1,1,1), new Color(0xa5a5a5)});
+    private final Object HORIZONTAL_SLIDER_SIZE =  new DimensionUIResource(100, 20);
+    private final Object VERTICAL_SLIDER_SIZE =  new DimensionUIResource(20, 100);
+    private final Object PALETTE_TOOLBAR_BORDER = new UIDefaults.ProxyLazyValue("org.jhotdraw.gui.plaf.palette.PaletteToolBarBorder$UIResource");
+    
+  
+   
     private static PaletteLookAndFeel instance;
     /**
      * Cached defaults.
      */
     private UIDefaults cachedDefaults;
 
+    private PaletteLookAndFeel(){
+       // initComponentDefaults(cachedDefaults); 
+    }
+    
     public static PaletteLookAndFeel getInstance() {
         if (instance == null) {
             instance = new PaletteLookAndFeel();
         }
+        
         return instance;
     }
 
@@ -68,50 +101,22 @@ public class PaletteLookAndFeel extends BasicLookAndFeel {
     public boolean isSupportedLookAndFeel() {
         return true;
     }
+    
+    
+    
 
     public UIDefaults getCachedDefaults() {
         if (cachedDefaults == null) {
             cachedDefaults = getDefaults();
+          //  this.initComponentDefaults(cachedDefaults);
         }
         return cachedDefaults;
     }
 
-    /**
-     * Looks up up the given key in our Hashtable and resolves LazyValues
-     * or ActiveValues.
-     */
+
+    //ten kod jest powtórzeniem tego co juz zostało zaimpleementowane przez UIdefaults 
     public Object get(Object key) {
-        UIDefaults defaults = getCachedDefaults();
-
-        /* Quickly handle the common case, without grabbing
-         * a lock.
-         */
-        Object value = defaults.get(key);
-        if (!(value instanceof ActiveValue) &&
-                !(value instanceof LazyValue)) {
-            return value;
-        }
-
-        /* At this point we know that the value of key was
-         * a LazyValue or an ActiveValue.
-         */
-        if (value instanceof LazyValue) {
-            try {
-                /* If an exception is thrown we'll just put the LazyValue
-                 * back in the table.
-                 */
-                value = ((LazyValue) value).createValue(defaults);
-            } finally {
-                if (value == null) {
-                    defaults.remove(key);
-                } else {
-                    defaults.put(key, value);
-                }
-            }
-        } else {
-            value = ((ActiveValue) value).createValue(defaults);
-        }
-        return value;
+        return getCachedDefaults().get(key);
     }
 
     public Font getFont(String key) {
@@ -130,7 +135,7 @@ public class PaletteLookAndFeel extends BasicLookAndFeel {
         return (Insets) get(key);
     }
     public boolean getBoolean(String key) {
-        return ((Boolean) get(key)).booleanValue();
+        return ((Boolean) get(key));
     }
 
     /**
@@ -148,186 +153,128 @@ public class PaletteLookAndFeel extends BasicLookAndFeel {
      * @see UIManager#getColor
      * @see UIManager#getFont
      */
+    
+    //SPECULATIVE GENERALITY
     public static void installColorsAndFont(JComponent c,
             String defaultBgName,
             String defaultFgName,
             String defaultFontName) {
-        Font f = c.getFont();
-        if (f == null || f instanceof UIResource) {
-            c.setFont(getInstance().getFont(defaultFontName));
-        }
-
+      
+        installFont(c, defaultFontName);
         installColors(c, defaultBgName, defaultFgName);
     }
-
-    /**
-     * Convenience method for installing a component's default Border 
-     * object on the specified component if either the border is 
-     * currently null or already an instance of UIResource.
-     * @param c the target component for installing default border
-     * @param defaultBorderName the key specifying the default border
-     */
+    
+    
+    public static void installFont(JComponent c, String defaultFontName){
+        if (c.getFont() == null ||c.getFont() instanceof UIResource) {
+            c.setFont(getInstance().getFont(defaultFontName)); 
+        }
+    }
+   
     public static void installBorder(JComponent c, String defaultBorderName) {
-        Border b = c.getBorder();
-        //if (b == null || b instanceof UIResource) {
-        c.setBorder(getInstance().getBorder(defaultBorderName));
-    //}
-
+        if (c.getBorder() == null || c.getBorder() instanceof UIResource) {
+            c.setBorder(getInstance().getBorder(defaultBorderName));
+        }
     }
 
-    /**
-     * Convenience method for initializing a component's foreground
-     * and background color properties with values from the current
-     * defaults table.  The properties are only set if the current
-     * value is either null or a UIResource.
-     * 
-     * @param c the target component for installing default color/font properties
-     * @param defaultBgName the key for the default background
-     * @param defaultFgName the key for the default foreground
-     * 
-     * @see #installColorsAndFont
-     * @see UIManager#getColor
-     */
-    public static void installColors(JComponent c,
-            String defaultBgName,
-            String defaultFgName) {
-        Color bg = c.getBackground();
-        if (bg == null || bg instanceof UIResource) {
-            c.setBackground(getInstance().getColor(defaultBgName));
-        }
+    public static void installColors(JComponent c, String defaultBgName, String defaultFgName) { 
+        installBgColor(c, defaultBgName);
+        installFgColor(c, defaultFgName);
+    }
 
-        Color fg = c.getForeground();
-        if (fg == null || fg instanceof UIResource) {
+    private static void installFgColor(JComponent c, String defaultFgName) {
+        if (c.getForeground() == null || c.getForeground() instanceof UIResource) {
             c.setForeground(getInstance().getColor(defaultFgName));
         }
     }
 
+    private static void installBgColor(JComponent c, String defaultBgName) {
+        if (c.getBackground() == null || c.getBackground() instanceof UIResource) {
+            c.setBackground(getInstance().getColor(defaultBgName));
+        }
+    }
+
+    
+    private class ProxyLazyFontValue extends ProxyLazyValue{
+        private Font font;
+        ProxyLazyFontValue(String c, String m, Font ft) {
+           super(c,m);
+           this.font = ft;
+        }
+    }
+    
     @Override
-    protected void initComponentDefaults(UIDefaults table) {
+    protected  void initComponentDefaults(UIDefaults table) {
         super.initComponentDefaults(table);
-
         table.addResourceBundle("org.jhotdraw.gui.Labels");
-
-        // *** Shared Fonts
-        Integer eleven = new Integer(11);
-        Integer twelve = new Integer(12);
-        Integer fontPlain = new Integer(Font.PLAIN);
-        Integer fontBold = new Integer(Font.BOLD);
-        Object dialogPlain11 = new ProxyLazyValue(
-                "javax.swing.plaf.FontUIResource",
-                null,
-                new Object[]{"Dialog Sans", fontPlain, eleven});
-        Object dialogPlain12 = new ProxyLazyValue(
-                "javax.swing.plaf.FontUIResource",
-                null,
-                new Object[]{"Dialog Sans", fontPlain, twelve});
-        Object fieldPlain12 = new ProxyLazyValue(
-                "javax.swing.plaf.FontUIResource",
-                null,
-                new Object[]{"Verdana", fontPlain, twelve});
-        Object serifPlain12 = new ProxyLazyValue(
-                "javax.swing.plaf.FontUIResource",
-                null,
-                new Object[]{"Serif", fontPlain, twelve});
-        Object sansSerifPlain12 = new ProxyLazyValue(
-                "javax.swing.plaf.FontUIResource",
-                null,
-                new Object[]{"SansSerif", fontPlain, twelve});
-        Object monospacedPlain12 = new ProxyLazyValue(
-                "javax.swing.plaf.FontUIResource",
-                null,
-                new Object[]{"MonoSpaced", fontPlain, twelve});
-        Object dialogBold12 = new ProxyLazyValue(
-                "javax.swing.plaf.FontUIResource",
-                null,
-                new Object[]{"Dialog", fontBold, twelve});
-
-
-        // *** Shared Colors
-        ColorUIResource black = new ColorUIResource(Color.black);
-
-        ColorUIResource control = new ColorUIResource(0xf0f0f0);
-        ColorUIResource controlText = black;
-
-        ColorUIResource selectionBackground = new ColorUIResource(0xb5d5ff);
-        ColorUIResource selectionForeground = black;
-
-        // *** Shared Insets
-        InsetsUIResource zeroInsets = new InsetsUIResource(0, 0, 0, 0);
-        InsetsUIResource twoInsets = new InsetsUIResource(2, 2, 2, 2);
-
-        // *** Shared Borders
-	/*Object buttonBorder = 
-        new ProxyLazyValue(
-        "org.jhotdraw.gui.plaf.palette.BackdropBorder$UIResource",
-        new Object[] {new PaletteButtonBorder()});*/
-        Object buttonBorder = new BackdropBorder.UIResource(new PaletteButtonBorder());
-        Object textBorder = new BackdropBorder.UIResource(new PaletteTextComponentBorder());
 
         Object[] defaults = {
             // *** Fonts
-            "SmallSystemFont", dialogPlain11,
+            "SmallSystemFont", DIALOG_PLAIN_11,
+             "Button.font", DIALOG_PLAIN_12,
 
             // *** Buttons
-            "Button.font", dialogPlain12,
-            "Button.background", control,
-            "Button.foreground", controlText,
-            "Button.border", buttonBorder,
-            "Button.margin", zeroInsets,
+           
+            "Button.background", TOOLBAR_COLOR,
+            "Button.foreground", TOOLBAR_COLOR_TEXT,
+            "Button.border", BTN_BORDER,
+            "Button.margin", ZERO_INSETS,
             // *** FontChooser
+            /*
             "Button.background", control,
             "Button.foreground", controlText,
             "Button.border", buttonBorder,
             "Button.margin", zeroInsets,
+            */
             // *** FormattedTextField
-            "FormattedTextField.font", fieldPlain12,
-            "FormattedTextField.background", control,
-            "FormattedTextField.foreground", controlText,
-            "FormattedTextField.border", textBorder,
-            "FormattedTextField.margin", zeroInsets,
+            "FormattedTextField.font", FIELD_PLAIN_12,
+            "FormattedTextField.background", TOOLBAR_COLOR,
+            "FormattedTextField.foreground", TOOLBAR_COLOR_TEXT,
+            "FormattedTextField.border", TXT_BORDER,
+            "FormattedTextField.margin", ZERO_INSETS,
             "FormattedTextField.opaque", Boolean.TRUE,
-            "FormattedTextField.errorIndicatorForeground", new ColorUIResource(0xfe4a41),
-            "FormattedTextField.selectionBackground", selectionBackground,
-            "FormattedTextField.selectionForeground",  selectionForeground,
+            "FormattedTextField.errorIndicatorForeground", ERROR_INDICATOR_FGD,
+            "FormattedTextField.selectionBackground", SELECTION_BGD,
+            "FormattedTextField.selectionForeground",  SELECTION_FGD,
             // *** Labels
-            "Label.font", dialogPlain12,
+            "Label.font", DIALOG_PLAIN_12,
             // *** Ribbons
-            "Ribbon.border", new UIDefaults.ProxyLazyValue("javax.swing.border.MatteBorder", new Object[] {new Insets(1,0,0,0), new Color(0xa5a5a5)}), //
+            "Ribbon.border", RIPPON_BORDER, //
             // *** ScrollPane
-            "ScrollPane.border", new UIDefaults.ProxyLazyValue("javax.swing.border.MatteBorder", new Object[] {new Insets(1,1,1,1), new Color(0xa5a5a5)}), //
+            "ScrollPane.border",SCROLLPANE_BORDER , //
             // *** Slider
-            "Slider.background", control,
-            "Slider.foreground", controlText,
-            "Slider.horizontalSize", new DimensionUIResource(100, 20),
-            "Slider.verticalSize", new DimensionUIResource(20, 100),
+            "Slider.background", TOOLBAR_COLOR,
+            "Slider.foreground", TOOLBAR_COLOR_TEXT,
+            "Slider.horizontalSize", HORIZONTAL_SLIDER_SIZE,
+            "Slider.verticalSize",VERTICAL_SLIDER_SIZE,
             // *** TextArea
-            "TextArea.selectionBackground", selectionBackground,
-            "TextArea.selectionForeground",  selectionForeground,
+            "TextArea.selectionBackground", SELECTION_BGD,
+            "TextArea.selectionForeground",  SELECTION_FGD,
             // *** TextField
-            "TextField.font", fieldPlain12,
-            "TextField.background", control,
-            "TextField.foreground", controlText,
-            "TextField.border", textBorder,
-            "TextField.margin", zeroInsets,
+            "TextField.font", FIELD_PLAIN_12,
+            "TextField.background", TOOLBAR_COLOR,
+            "TextField.foreground", TOOLBAR_COLOR_TEXT,
+            "TextField.border", TXT_BORDER,
+            "TextField.margin", ZERO_INSETS,
             "TextField.opaque", Boolean.TRUE,
-            "TextField.selectionBackground", selectionBackground,
-            "TextField.selectionForeground",  selectionForeground,
+            "TextField.selectionBackground", SELECTION_BGD,
+            "TextField.selectionForeground",  SELECTION_FGD,
             // *** ToolBar
-            "ToolBar.font", dialogPlain12,
-            "ToolBar.background", control,
-            "ToolBar.foreground", controlText,
-            "ToolBar.dockingBackground", control,
+            "ToolBar.font", DIALOG_PLAIN_12,
+            "ToolBar.background", TOOLBAR_COLOR,
+            "ToolBar.foreground", TOOLBAR_COLOR_TEXT,
+            "ToolBar.dockingBackground", TOOLBAR_COLOR,
             //	    "ToolBar.dockingForeground", red,
-            "ToolBar.floatingBackground", control,
+            "ToolBar.floatingBackground", TOOLBAR_COLOR,
             //	    "ToolBar.floatingForeground", darkGray,
             //	    "ToolBar.border", etchedBorder,
-            "ToolBar.border", new UIDefaults.ProxyLazyValue("org.jhotdraw.gui.plaf.palette.PaletteToolBarBorder$UIResource"), //
+            "ToolBar.border",PALETTE_TOOLBAR_BORDER, //
             //	    "ToolBar.separatorSize", toolBarSeparatorSize,
         };
 
         table.putDefaults(defaults);
     }
-
+    
     /**
      * Returns the ui that is of type <code>klass</code>, or null if
      * one can not be found.

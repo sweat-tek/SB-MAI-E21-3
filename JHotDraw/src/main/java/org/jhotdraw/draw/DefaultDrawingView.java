@@ -80,7 +80,7 @@ public class DefaultDrawingView
     private Set<Figure> selectedFigures = new LinkedHashSet<Figure>();
     //private int rainbow = 0;
     private LinkedList<Handle> selectionHandles = new LinkedList<Handle>();
-    private boolean isConstrainerVisible = false;
+    private boolean isConstrainerVisible = false; 
     private Constrainer visibleConstrainer = new GridConstrainer(8, 8);
     private Constrainer invisibleConstrainer = new GridConstrainer();
     private Handle secondaryHandleOwner;
@@ -252,6 +252,8 @@ public class DefaultDrawingView
         return drawing;
     }
 
+    
+    //DYMEK PRZY NARZEDZIU Z TEKSTEM
     @Override
     public String getToolTipText(MouseEvent evt) {
         if (getEditor() != null && getEditor().getTool() != null) {
@@ -281,24 +283,28 @@ public class DefaultDrawingView
      * Uses rendering hints for fast painting. Paints the canvasColor, the
      * grid, the drawing, the handles and the current tool.
      */
+    
+    //REFACTORING
     @Override
     public void paintComponent(Graphics gr) {
         Graphics2D g = (Graphics2D) gr;
 
         // Set rendering hints for speed
-        g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
-        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, (Options.isFractionalMetrics()) ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, (Options.isTextAntialiased()) ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-
-        drawBackground(g);
-        drawConstrainer(g);
+        configureComponentRendering(g,RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR, RenderingHints.VALUE_RENDER_SPEED);
+        
+        //THE ORDER OF THE METHODS IS SIGNIFICANT!!
+        // it should closed to be sure that the order of calling methos will be the same
+        
+        
+        
+        //BUILDER OF A VIew -> director which specify the steps of building a view, single class for all these methods with the constructor!!
+        
+        drawBackground(g); //background of the whole view, canvas Color
+        drawConstrainer(g); // draw the grid od the canvas view
         drawDrawing(g);
-        drawHandles(g);
-        drawTool(g);
+        drawHandles(g); //DRAW THE SQUARE CONSTRAINTS AROUND THE RECTANGLE, EVERYTHING ON THE VIEW
+        drawTool(g);  
+        
     }
 
     /**
@@ -310,55 +316,70 @@ public class DefaultDrawingView
     public void printComponent(Graphics gr) {
 
         Graphics2D g = (Graphics2D) gr;
+        configureComponentRendering(g, RenderingHints.VALUE_INTERPOLATION_BICUBIC, RenderingHints.VALUE_RENDER_QUALITY);
+        drawDrawing(g);
+    }
 
+    
+    private void configureComponentRendering(Graphics2D g, Object keyInterpolation, Object keyRendering ) {
         // Set rendering hints for quality
         g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, (Options.isFractionalMetrics()) ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, (Options.isTextAntialiased()) ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        drawDrawing(g);
+        
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, keyInterpolation);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, keyRendering);
     }
-
+    
+    
+    
+    //REFACTORIZATION
     protected void drawBackground(Graphics2D g) {
         // Position of the zero coordinate point on the view
-        int x = (int) (-translate.x * scaleFactor);
-        int y = (int) (-translate.y * scaleFactor);
+        int xCoordinateVal = (int) (-translate.x * scaleFactor);
+        int yCoordinateVal = (int) (-translate.y * scaleFactor);
 
-        int w = getWidth();
-        int h = getHeight();
+        int widthVal = getWidth();
+        int heightVal = getHeight();
 
         // Retrieve the canvasColor color from the drawing
         Color canvasColor;
         if (drawing == null) {
             canvasColor = getBackground();
-        } else {
+            
+        } 
+        else 
+        {
             canvasColor = CANVAS_FILL_COLOR.get(drawing);
+            
             if (canvasColor != null) {
                 canvasColor = new Color((canvasColor.getRGB() & 0xffffff) | ((int) (CANVAS_FILL_OPACITY.get(drawing) * 255) << 24), true);
             }
         }
-        if (canvasColor == null || canvasColor.getAlpha() != 255) {
-            g.setPaint(getBackgroundPaint(x, y));
-            g.fillRect(x, y, w - x, h - y);
+        
+        if (canvasColor == null || canvasColor.getAlpha() != 255) 
+        {
+            g.setPaint(getBackgroundPaint(xCoordinateVal, yCoordinateVal));
+            g.fillRect(xCoordinateVal, yCoordinateVal, widthVal - xCoordinateVal, heightVal - yCoordinateVal);
         }
-        if (canvasColor != null) {
+        if (canvasColor != null) 
+        {
             g.setColor(canvasColor);
-            g.fillRect(x, y, w - x, h - y);
+            g.fillRect(xCoordinateVal, yCoordinateVal, widthVal - xCoordinateVal, heightVal - yCoordinateVal);
         }
 
         // Draw a gray canvasColor for the area which is at
         // negative view coordinates.
         Color outerBackground = new Color(0xf0f0f0);
-        if (y > 0) {
+        if (yCoordinateVal > 0) {
             g.setColor(outerBackground);
-            g.fillRect(0, 0, w, y);
+            g.fillRect(0, 0, widthVal, yCoordinateVal);
         }
-        if (x > 0) {
+        if (xCoordinateVal > 0) {
             g.setColor(outerBackground);
-            g.fillRect(0, y, x, h - y);
+            g.fillRect(0, yCoordinateVal, xCoordinateVal, heightVal - yCoordinateVal);
         }
 
         if (getDrawing() != null) {
@@ -367,13 +388,13 @@ public class DefaultDrawingView
             if (cw != null && ch != null) {
                 Point lowerRight = drawingToView(
                         new Point2D.Double(cw, ch));
-                if (lowerRight.x < w) {
+                if (lowerRight.x < widthVal) {
                     g.setColor(outerBackground);
-                    g.fillRect(lowerRight.x, y, w - lowerRight.x, h - y);
+                    g.fillRect(lowerRight.x, yCoordinateVal, widthVal - lowerRight.x, heightVal - yCoordinateVal);
                 }
-                if (lowerRight.y < h) {
+                if (lowerRight.y < heightVal) {
                     g.setColor(outerBackground);
-                    g.fillRect(x, lowerRight.y, w - x, h - lowerRight.y);
+                    g.fillRect(xCoordinateVal, lowerRight.y, widthVal - xCoordinateVal, heightVal - lowerRight.y);
                 }
             }
         }

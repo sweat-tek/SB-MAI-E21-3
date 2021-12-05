@@ -55,7 +55,7 @@ public class GroupAction extends AbstractGroupAction {
         return create(editor, new SVGGroupFigure());
     }
 
-    public static GroupAction create(DrawingEditor editor, CompositeFigure prototype) {
+    private static GroupAction create(DrawingEditor editor, CompositeFigure prototype) {
         GroupAction groupAction = new GroupAction(editor, prototype);
         UngroupAction ungroupAction = new UngroupAction(editor, prototype);
         groupAction.setUngroupAction(ungroupAction);

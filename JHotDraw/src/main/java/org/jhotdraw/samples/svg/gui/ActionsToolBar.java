@@ -49,27 +49,29 @@ public class ActionsToolBar extends AbstractToolBar {
     @Override
     public void setEditor(DrawingEditor newValue) {
         if (this.editor != null && undoManager != null) {
-            this.removePropertyChangeListener(getEventHandler());
+            this.removePropertyChangeListener(getDisclosureEventHandler());
         }
         this.editor = newValue;
         if (editor != null && undoManager != null) {
-            init();
+           // init(); It is an empty method
+           
             setDisclosureState(prefs.getInt(getID() + ".disclosureState", 1));
-            this.addPropertyChangeListener(getEventHandler());
+            this.addPropertyChangeListener(getDisclosureEventHandler());
         }
     }
 
     public void setUndoManager(UndoRedoManager newValue) {
         if (this.editor != null && newValue != null) {
-            this.removePropertyChangeListener(getEventHandler());
+            this.removePropertyChangeListener(getDisclosureEventHandler());
         }
         this.undoManager = newValue;
         if (editor != null && newValue != null) {
-            init();
+            //init();It is an empty method
             setDisclosureState(prefs.getInt(getID() + ".disclosureState", 1));
-            this.addPropertyChangeListener(getEventHandler());
+            this.addPropertyChangeListener(getDisclosureEventHandler());
         }
     }
+    
 
     @Override
     protected JComponent createDisclosedComponent(int state) {
@@ -80,8 +82,9 @@ public class ActionsToolBar extends AbstractToolBar {
                 p = new JPanel();
                 p.setOpaque(false);
                 p.setBorder(new EmptyBorder(5, 5, 5, 8));
-
-                Preferences prefs = Preferences.userNodeForPackage(getClass());
+                //we don' use that PREF value
+               // Preferences
+                 prefs = Preferences.userNodeForPackage(getClass());  
 
                 ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.svg.Labels");
 
@@ -98,7 +101,8 @@ public class ActionsToolBar extends AbstractToolBar {
                 btn.putClientProperty("hideActionText", Boolean.TRUE);
                 gbc = new GridBagConstraints();
                 gbc.gridy = 0;
-                gbc.gridx = 0;
+                //gbc.gridx = 0;
+                gbc.insets = new Insets(3, 0, 0, 0);
                 p.add(btn, gbc);
 
                 btn = new JButton(undoManager.getRedoAction());
@@ -108,7 +112,7 @@ public class ActionsToolBar extends AbstractToolBar {
                 btn.putClientProperty("hideActionText", Boolean.TRUE);
                 gbc = new GridBagConstraints();
                 gbc.gridy = 0;
-                gbc.insets = new Insets(0, 3, 0, 0);
+                gbc.insets = new Insets(3, 3, 0, 0);
                 p.add(btn, gbc);
 
 
@@ -134,8 +138,8 @@ public class ActionsToolBar extends AbstractToolBar {
                 labels.configureToolBarButton(pb, "actions");
                 pb.add(new DuplicateAction());
                 pb.addSeparator();
-                pb.add(GroupAction.create(editor, new SVGGroupFigure()));
-                pb.add(UngroupAction.create(editor, new SVGGroupFigure()));
+                pb.add(GroupAction.create(editor));
+                pb.add(UngroupAction.create(editor));
                 pb.addSeparator();
                 pb.add(new CutAction());
                 pb.add(new CopyAction());

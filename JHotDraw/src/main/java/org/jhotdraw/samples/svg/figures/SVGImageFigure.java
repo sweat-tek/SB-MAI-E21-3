@@ -118,10 +118,12 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
         }
     }
 
+    //REFUSED BEQUEST
     protected void drawFill(Graphics2D g) {
 
     }
 
+    //REFUSED BEQUEST
     protected void drawStroke(Graphics2D g) {
 
     }
@@ -146,13 +148,22 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
     public Rectangle2D.Double getBounds() {
         return (Rectangle2D.Double) rectangle.clone();
     }
+    
+    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
+      invalidateTransformedShape();
+      rectangle.x = Math.min(anchor.x, lead.x);
+      rectangle.y = Math.min(anchor.y, lead.y);
+      rectangle.width = Math.max(0.1, Math.abs(lead.x - anchor.x));
+      rectangle.height = Math.max(0.1, Math.abs(lead.y - anchor.y));
+  }
 
     @Override
     public Rectangle2D.Double getDrawingArea() {
         Rectangle2D rx = getTransformedShape().getBounds2D();
         Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ? (Rectangle2D.Double) rx : new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
         return r;
-    }
+    } 
+    
 
     /**
      * Checks if a Point2D.Double is inside the figure.
@@ -161,13 +172,7 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
         return getHitShape().contains(p);
     }
 
-    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
-        invalidateTransformedShape();
-        rectangle.x = Math.min(anchor.x, lead.x);
-        rectangle.y = Math.min(anchor.y, lead.y);
-        rectangle.width = Math.max(0.1, Math.abs(lead.x - anchor.x));
-        rectangle.height = Math.max(0.1, Math.abs(lead.y - anchor.y));
-    }
+  
 
     private void invalidateTransformedShape() {
         cachedTransformedShape = null;
@@ -235,7 +240,8 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
         };
     }
 
-    // EDITING
+    
+    //SWITCH STATEMENT
     @Override
     public Collection<Handle> createHandles(int detailLevel) {
         LinkedList<Handle> handles = new LinkedList<Handle>();

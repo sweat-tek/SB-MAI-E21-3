@@ -84,18 +84,19 @@ public class ArrangeToolBar extends AbstractToolBar {
                     GridBagConstraints gbc;
                     AbstractButton btn;
 
-                    btn = new JButton(new BringToFrontAction(editor));
+                    btn = new JButton(BringToFrontAction.create(editor));
                     btn.setUI((PaletteButtonUI) PaletteButtonUI.createUI(btn));
                     btn.setText(null);
                     labels.configureToolBarButton(btn, BringToFrontAction.ID);
                     btn.putClientProperty("hideActionText", Boolean.TRUE);
+                    
                     gbc = new GridBagConstraints();
                     gbc.gridy = 0;
                     gbc.anchor = GridBagConstraints.EAST;
                     p.add(btn, gbc);
 
 
-                    btn = new JButton(new SendToBackAction(editor));
+                    btn = new JButton(SendToBackAction.create(editor));
                     btn.setUI((PaletteButtonUI) PaletteButtonUI.createUI(btn));
                     btn.setText(null);
                     labels.configureToolBarButton(btn, SendToBackAction.ID);

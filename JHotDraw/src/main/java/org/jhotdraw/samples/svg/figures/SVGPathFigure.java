@@ -449,6 +449,7 @@ public class SVGPathFigure extends AbstractAttributedCompositeFigure implements 
         }
         return actions;
     }
+    //REFACTORING 
     // CONNECTING
     public boolean canConnect() {
         return false; // SVG does not support connecting
@@ -514,5 +515,15 @@ public class SVGPathFigure extends AbstractAttributedCompositeFigure implements 
         }
         TRANSFORM.basicSet(this, null);
         changed();
+    }
+
+    @Override
+    public void addCompositeFigureListener(CompositeFigureListener listener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeCompositeFigureListener(CompositeFigureListener listener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

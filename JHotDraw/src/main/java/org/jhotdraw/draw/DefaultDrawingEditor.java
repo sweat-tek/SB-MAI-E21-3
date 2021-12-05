@@ -45,11 +45,14 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  */
 public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor, ToolListener {
 
+    
     private HashMap<AttributeKey, Object> defaultAttributes = new HashMap<AttributeKey, Object>();
     private HashMap<AttributeKey, Object> handleAttributes = new HashMap<AttributeKey, Object>();
     private Tool tool;
     private HashSet<DrawingView> views;
-    private DrawingView activeView;
+    
+    //REFACTORIZATION
+    private DrawingView activeView; //SINGLETON
     private boolean isEnabled = true;
     private FocusListener focusHandler = new FocusListener() {
 
@@ -65,6 +68,8 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
         }
     };
 
+    
+    //REFACTORIZATION -> MAKE IT PRIVATE and call from the static method getDefaultDrawingEditor()
     /** Creates a new instance. */
     public DefaultDrawingEditor() {
         setDefaultAttribute(FILL_COLOR, Color.white);
@@ -73,6 +78,10 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
 
         views = new HashSet<DrawingView>();
     }
+    
+   
+    
+    
 
     public void setTool(Tool newValue) {
         Tool oldValue = tool;
@@ -124,6 +133,7 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
     }
 
     public void toolDone(ToolEvent evt) {
+        
         // XXX - Maybe we should do this with all views of the editor??
         DrawingView v = getActiveView();
         if (v != null) {

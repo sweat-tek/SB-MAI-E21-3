@@ -75,6 +75,7 @@ public abstract class AbstractFigure
     // COMPOSITE FIGURES
     // CLONING
     // EVENT HANDLING
+    
     public void addFigureListener(FigureListener l) {
         listenerList.add(FigureListener.class, l);
     }

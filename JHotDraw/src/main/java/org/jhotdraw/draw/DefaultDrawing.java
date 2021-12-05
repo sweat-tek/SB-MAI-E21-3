@@ -74,17 +74,13 @@ public class DefaultDrawing
     public void draw(Graphics2D g, Collection<Figure> children) {
         Rectangle2D clipBounds = g.getClipBounds();
         if (clipBounds != null) {
-            for (Figure f : children) {
-                if (f.isVisible() && f.getDrawingArea().intersects(clipBounds)) {
-                    f.draw(g);
-                }
-            }
+            children.stream().filter(f -> (f.isVisible() && f.getDrawingArea().intersects(clipBounds))).forEachOrdered(f -> {
+                f.draw(g);
+            });
         } else {
-            for (Figure f : children) {
-                if (f.isVisible()) {
-                    f.draw(g);
-                }
-            }
+            children.stream().filter(f -> (f.isVisible())).forEachOrdered(f -> {
+                f.draw(g);
+            });
         }
     }
 

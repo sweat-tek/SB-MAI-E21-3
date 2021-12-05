@@ -33,6 +33,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * <br>1.0.1 2008-03-30 Made basicRemove method non-final.
  * <br>1.0 July 17, 2007 Created.
  */
+
 public abstract class AbstractCompositeFigure
         extends AbstractFigure
         implements CompositeFigure {
@@ -61,18 +62,22 @@ public abstract class AbstractCompositeFigure
      * Handles figure changes in the children.
      */
     protected EventHandler eventHandler;
+    
+    public  EventHandler getEventHandler(){
+        return eventHandler;
+    }
 
     protected class EventHandler extends FigureAdapter implements UndoableEditListener, Serializable {
-
+       
         @Override
         public void figureRequestRemove(FigureEvent e) {
-            remove(e.getFigure());
+           remove(e.getFigure());
         }
 
         @Override
         public void figureChanged(FigureEvent e) {
-            invalidate();
-                fireFigureChanged(e.getInvalidatedArea());
+           invalidate();
+            fireFigureChanged(e.getInvalidatedArea());
         }
 
         @Override
@@ -100,7 +105,7 @@ public abstract class AbstractCompositeFigure
         }
     }
 
-    public AbstractCompositeFigure() {
+    protected AbstractCompositeFigure() {
         eventHandler = createEventHandler();
     }
 
@@ -114,9 +119,15 @@ public abstract class AbstractCompositeFigure
         return handles;
     }
 
-    protected EventHandler createEventHandler() {
+    
+    /**
+     *
+     * @return
+     */
+    public EventHandler createEventHandler() {
         return new EventHandler();
     }
+  
 
     public boolean add(Figure figure) {
         add(getChildCount(), figure);
@@ -491,6 +502,7 @@ public abstract class AbstractCompositeFigure
         in.closeElement();
     }
 
+    @Override
     public void write(DOMOutput out) throws IOException {
         out.openElement("children");
         for (Figure child : getChildren()) {
@@ -499,6 +511,7 @@ public abstract class AbstractCompositeFigure
         out.closeElement();
     }
 
+    @Override
     public void restoreTransformTo(Object geometry) {
         LinkedList list = (LinkedList) geometry;
         Iterator i = list.iterator();
@@ -508,6 +521,7 @@ public abstract class AbstractCompositeFigure
         invalidate();
     }
 
+    @Override
     public Object getTransformRestoreData() {
         LinkedList<Object> list = new LinkedList<Object>();
         for (Figure child : getChildren()) {
@@ -522,11 +536,14 @@ public abstract class AbstractCompositeFigure
         layout();
     }
 
+    
+    //KOD UŻYWAJĄCY EVENT HANDLERA
     public void basicAdd(int index, Figure figure) {
         children.add(index, figure);
         figure.addFigureListener(eventHandler);
     }
 
+     //KOD UŻYWAJĄCY EVENT HANDLERA
     public Figure basicRemoveChild(int index) {
         Figure figure = children.remove(index);
         figure.removeFigureListener(eventHandler);
@@ -546,7 +563,8 @@ public abstract class AbstractCompositeFigure
         return children.get(index);
     }
 
-    @Override
+    //KOD UŻYWAJĄCY EVENT HANDLERA
+       @Override
     public AbstractCompositeFigure clone() {
         AbstractCompositeFigure that = (AbstractCompositeFigure) super.clone();
         that.children = new ArrayList<Figure>();
@@ -558,7 +576,6 @@ public abstract class AbstractCompositeFigure
         }
         return that;
     }
-
     @Override
     protected void invalidate() {
         cachedBounds = null;
@@ -613,7 +630,8 @@ public abstract class AbstractCompositeFigure
      *  Notify all listenerList that have registered interest for
      * notification on this event type.
      */
-    protected void fireFigureAdded(Figure f, int zIndex) {
+    //WEWNETRZNA
+     protected void fireFigureAdded(Figure f, int zIndex) {
         CompositeFigureEvent event = null;
         // Notify all listeners that have registered interest for
         // Guaranteed to return a non-null array
@@ -631,6 +649,7 @@ public abstract class AbstractCompositeFigure
         }
     }
 
+    //WEWNETRZNA
     /**
      *  Notify all listenerList that have registered interest for
      * notification on this event type.
@@ -652,7 +671,7 @@ public abstract class AbstractCompositeFigure
             }
         }
     }
-
+    
     public void removeCompositeFigureListener(CompositeFigureListener listener) {
         listenerList.remove(CompositeFigureListener.class, listener);
     }

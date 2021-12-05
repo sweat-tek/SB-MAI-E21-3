@@ -114,8 +114,10 @@ public class DefaultSDIApplication extends AbstractApplication {
         m.putAction(ExitAction.ID, new ExitAction(this));
 
         m.putAction(ClearAction.ID, new ClearAction(this));
+        
         m.putAction(NewAction.ID, new NewAction(this));
         appLabels.configureAction(m.getAction(NewAction.ID), "window.new");
+        
         m.putAction(LoadAction.ID, new LoadAction(this));
         m.putAction(ClearRecentFilesAction.ID, new ClearRecentFilesAction(this));
         m.putAction(SaveAction.ID, new SaveAction(this));
@@ -138,85 +140,106 @@ public class DefaultSDIApplication extends AbstractApplication {
         p.putAction(LoadAction.ID, m.getAction(LoadAction.ID));
     }
 
-    @SuppressWarnings("unchecked")
-    public void show(final View p) {
+    
+    @Override
+    public void displayFrameView(final View p) {
         if (!p.isShowing()) {
             p.setShowing(true);
             final JFrame f = new JFrame();
-            f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            updateViewTitle(p, f);
-
-            JPanel panel = (JPanel) wrapViewComponent(p);
-            f.add(panel);
-            f.setMinimumSize(new Dimension(200, 200));
-            f.setPreferredSize(new Dimension(600, 400));
-
-            f.setJMenuBar(createMenuBar(p, (java.util.List<Action>) panel.getClientProperty("toolBarActions")));
-
-            PreferencesUtil.installFramePrefsHandler(prefs, "view", f);
-            Point loc = f.getLocation();
-            boolean moved;
-            do {
-                moved = false;
-                for (Iterator i = views().iterator(); i.hasNext();) {
-                    View aView = (View) i.next();
-                    if (aView != p
-                            && SwingUtilities.getWindowAncestor(aView.getComponent()) != null
-                            && SwingUtilities.getWindowAncestor(aView.getComponent()).
-                                    getLocation().equals(loc)) {
-                        loc.x += 22;
-                        loc.y += 22;
-                        moved = true;
-                        break;
-                    }
-                }
-            } while (moved);
-            f.setLocation(loc);
-
-            f.addWindowListener(new WindowAdapter() {
-
-                public void windowClosing(final WindowEvent evt) {
-                    getModel().getAction(CloseAction.ID).actionPerformed(
-                            new ActionEvent(f, ActionEvent.ACTION_PERFORMED,
-                                    "windowClosing"));
-                }
-
-                @Override
-                public void windowClosed(final WindowEvent evt) {
-                    if (p == getActiveView()) {
-                        setActiveView(null);
-                    }
-                    p.stop();
-                }
-
-                public void windowActivated(WindowEvent e) {
-                    setActiveView(p);
-                }
-            });
-
-            p.addPropertyChangeListener(new PropertyChangeListener() {
-
-                public void propertyChange(PropertyChangeEvent evt) {
-                    String name = evt.getPropertyName();
-                    if (name.equals(View.HAS_UNSAVED_CHANGES_PROPERTY)
-                            || name.equals(View.FILE_PROPERTY)
-                            || name.equals(View.MULTIPLE_OPEN_ID_PROPERTY)) {
-                        updateViewTitle(p, f);
-                    }
-                }
-            });
-
-            f.setVisible(true);
-            p.start();
+            setFrame(f, p);
+            //END OF FRAME SETUP
+            manageMultipleFrames(f, p);
         }
     }
+
+    private void setFrame(final JFrame f, final View p) {
+        f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        updateViewTitle(p, f);
+        JPanel panel = (JPanel) wrapViewComponent(p);  //it is a penl with all toolbar actions
+        f.add(panel);
+        //min values of the frame as well as the preffered size
+        //can be defined as a final variables
+        f.setMinimumSize(new Dimension(200, 200));
+        f.setPreferredSize(new Dimension(600, 400));
+        
+        //tworzenie MenuBara (tego górnego)
+        f.setJMenuBar(createMenuBar(p, (java.util.List<Action>) panel.getClientProperty("toolBarActions")));
+        PreferencesUtil.installFramePrefsHandler(prefs, "view", f);
+       
+    }
+
+    private void manageMultipleFrames(final JFrame f, final View p) {
+        //method for setting the frame location fo the new window
+        //instead of 22 value, there should be a
+        //constant values for an offsetX and offsetY
+        
+        Point loc = f.getLocation();
+        boolean moved;
+        do {
+            moved = false;
+            for (Iterator i = views().iterator(); i.hasNext();) {
+                View aView = (View) i.next();
+                if (aView != p
+                        && SwingUtilities.getWindowAncestor(aView.getComponent()) != null
+                        && SwingUtilities.getWindowAncestor(aView.getComponent()).
+                                getLocation().equals(loc)) {
+                    loc.x += 22; 
+                    loc.y += 22; 
+                    moved = true;
+                    break;
+                }
+            }
+        } while (moved);
+        
+        f.setLocation(loc);
+        
+        f.addWindowListener(new WindowAdapter() {
+            
+            public void windowClosing(final WindowEvent evt) {
+                getModel().getAction(CloseAction.ID).actionPerformed(
+                        new ActionEvent(f, ActionEvent.ACTION_PERFORMED,
+                                "windowClosing"));
+            }
+            
+            @Override
+            public void windowClosed(final WindowEvent evt) {
+                if (p == getActiveView()) {
+                    setActiveView(null);
+                }
+                p.stop();
+            }
+            
+            public void windowActivated(WindowEvent e) {
+                setActiveView(p);
+            }
+        });
+        
+        p.addPropertyChangeListener(new PropertyChangeListener() {
+            
+            public void propertyChange(PropertyChangeEvent evt) {
+                String name = evt.getPropertyName();
+                if (name.equals(View.HAS_UNSAVED_CHANGES_PROPERTY)
+                        || name.equals(View.FILE_PROPERTY)
+                        || name.equals(View.MULTIPLE_OPEN_ID_PROPERTY)) {
+                    updateViewTitle(p, f);
+                }
+            }
+        });
+        
+        f.setVisible(true);
+        p.start();
+    }
+    
+    
 
     /**
      * Returns the view component. Eventually wraps it into another component in
      * order to provide additional functionality.
      */
+    
+    //adding a toolbar (JPanel) inside a JComponent.
     protected Component wrapViewComponent(View p) {
-        JComponent c = p.getComponent();
+        JComponent c = p.getComponent();// action of a panel
         if (getModel() != null) {
             LinkedList<Action> toolBarActions = new LinkedList<Action>();
 
@@ -225,7 +248,7 @@ public class DefaultSDIApplication extends AbstractApplication {
                 id++;
                 JPanel panel = new JPanel(new BorderLayout());
                 panel.add(tb, BorderLayout.NORTH);
-                panel.add(c, BorderLayout.CENTER);
+                panel.add(c, BorderLayout.CENTER); 
                 c = panel;
                 PreferencesUtil.installToolBarPrefsHandler(prefs, "toolbar." + id, tb);
                 toolBarActions.addFirst(new ToggleVisibleAction(tb, tb.getName()));
@@ -235,13 +258,16 @@ public class DefaultSDIApplication extends AbstractApplication {
         return c;
     }
 
+    @Override
     public void hide(View p) {
         if (p.isShowing()) {
             p.setShowing(false);
+            
             JFrame f = (JFrame) SwingUtilities.getWindowAncestor(p.getComponent());
-            f.setVisible(false);
+            f.setVisible(false); 
             f.remove(p.getComponent());
             f.dispose();
+          
         }
     }
 
@@ -257,15 +283,21 @@ public class DefaultSDIApplication extends AbstractApplication {
      * The view menu bar is displayed for a view. The default implementation
      * returns a new screen menu bar.
      */
+    
     protected JMenuBar createMenuBar(final View p, java.util.List<Action> toolBarActions) {
         JMenuBar mb = new JMenuBar();
+        
         mb.add(createFileMenu(p));
+        
         JMenu lastMenu = null;
+        
         for (JMenu mm : getModel().createMenus(this, p)) {
             mb.add(mm);
             lastMenu = mm;
         }
+        
         JMenu viewMenu = createViewMenu(p, toolBarActions);
+        
         if (viewMenu != null) {
             if (lastMenu != null && lastMenu.getText().equals(viewMenu.getText())) {
                 for (Component c : lastMenu.getMenuComponents()) {
@@ -279,6 +311,7 @@ public class DefaultSDIApplication extends AbstractApplication {
         // Merge the help menu if one has been provided by the application model,
         // otherwise just add it.
         JMenu helpMenu = createHelpMenu(p);
+        
         for (Component mc : mb.getComponents()) {
             JMenu m = (JMenu) mc;
             if (m.getText().equals(helpMenu.getText())) {

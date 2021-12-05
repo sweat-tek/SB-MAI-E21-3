@@ -27,6 +27,8 @@ import org.jhotdraw.app.Application;
  * @version 1.0 June 15, 2006 Created.
  * @see org.jhotdraw.app.Application
  */
+
+
 public abstract class AbstractApplicationAction extends AbstractAction {
     private Application app;
     

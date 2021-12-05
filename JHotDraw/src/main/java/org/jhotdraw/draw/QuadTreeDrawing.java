@@ -55,6 +55,7 @@ public class QuadTreeDrawing extends AbstractDrawing {
         needsSorting = true;
     }
 
+    //NEW FUNCTIONALITY COMPARING TO DEFAULT DRAWING
     @Override
     public Figure basicRemoveChild(int index) {
         Figure figure = getChild(index);
@@ -307,14 +308,17 @@ public class QuadTreeDrawing extends AbstractDrawing {
         return that;
     }
 
-    protected EventHandler createEventHandler() {
+    @Override
+    public EventHandler createEventHandler() {
         return new QuadTreeEventHandler();
     }
+
 
     /**
      * Handles all figure events fired by Figures contained in the Drawing.
      */
     protected class QuadTreeEventHandler extends AbstractCompositeFigure.EventHandler {
+   
 
         @Override
         public void figureChanged(FigureEvent e) {
@@ -326,6 +330,8 @@ public class QuadTreeDrawing extends AbstractDrawing {
         }
     }
 
+    
+    //REFACTORING PULL-DOWN METHODS TO GET RID OF AN EMPTY METHODS
     @Override
     protected void drawFill(Graphics2D g) {
         //throw new UnsupportedOperationException("Not supported yet.");

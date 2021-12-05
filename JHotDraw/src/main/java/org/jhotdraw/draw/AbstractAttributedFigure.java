@@ -42,6 +42,7 @@ public abstract class AbstractAttributedFigure extends AbstractFigure {
     /**
      * Holds the attributes of the figure.
      */
+    
     private HashMap<AttributeKey, Object> attributes = new HashMap<AttributeKey,Object>();
     /**
      * Forbidden attributes can't be set by the setAttribute() operation.
@@ -77,6 +78,7 @@ public abstract class AbstractAttributedFigure extends AbstractFigure {
     public Map<AttributeKey, Object> getAttributes() {
         return new HashMap<AttributeKey,Object>(attributes);
     }
+    
     public Object getAttributesRestoreData() {
         return getAttributes();
     }
@@ -139,15 +141,17 @@ public abstract class AbstractAttributedFigure extends AbstractFigure {
         return (value != null) ? value.doubleValue() : 10f;
     }
     
-    
+    //get
     public Rectangle2D.Double getDrawingArea() {
         double strokeTotalWidth = AttributeKeys.getStrokeTotalWidth(this);
         double width = strokeTotalWidth / 2d;
         if (STROKE_JOIN.get(this) == BasicStroke.JOIN_MITER) {
             width *= STROKE_MITER_LIMIT.get(this);
+        //TU JEDYNA RÓŻNICA DLA ABSTRACT ATTRIBUTED COMPOSITE FIGURE    
         } else if (STROKE_CAP.get(this) != BasicStroke.CAP_BUTT) {
             width += strokeTotalWidth * 2;
         }
+        
         width++;
         Rectangle2D.Double r = getBounds();
         Geom.grow(r, width, width);
@@ -160,6 +164,8 @@ public abstract class AbstractAttributedFigure extends AbstractFigure {
      * object with the FILL_COLOR attribute before calling this method.
      * If the FILL_COLOR attribute is null, this method is not called.
      */
+    
+    
     protected abstract void drawFill(java.awt.Graphics2D g);
     /**
      * This method is called by method draw() to draw the lines of the figure
@@ -173,9 +179,12 @@ public abstract class AbstractAttributedFigure extends AbstractFigure {
      * the TEXT_COLOR attribute before calling this method.
      * If the TEXT_COLOR attribute is null, this method is not called.
      */
+    
+    //refused bequest
     protected abstract void drawStroke(java.awt.Graphics2D g);
-    protected void drawText(java.awt.Graphics2D g) {
-    }
+    
+    //refused bequest
+    protected void drawText(java.awt.Graphics2D g) {}
     
     public AbstractAttributedFigure clone() {
         AbstractAttributedFigure that = (AbstractAttributedFigure) super.clone();
@@ -233,6 +242,8 @@ public abstract class AbstractAttributedFigure extends AbstractFigure {
             in.closeElement();
         }
     }
+    
+    
     
     protected AttributeKey getAttributeKey(String name) {
         return AttributeKeys.supportedAttributeMap.get(name);

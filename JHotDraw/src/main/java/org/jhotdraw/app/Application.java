@@ -109,7 +109,7 @@ public interface Application {
     /**
      * Shows a view.
      */
-    public void show(View p);
+    public void displayFrameView(View p);
     /**
      * Hides a view.
      */

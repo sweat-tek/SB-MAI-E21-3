@@ -176,7 +176,7 @@ public abstract class AbstractAttributeEditorHandler<T> {
      * @param newValue a drawing editor.
      */
     public void setDrawingEditor(DrawingEditor newValue) {
-        DrawingEditor oldValue = drawingEditor;
+        DrawingEditor oldValue = drawingEditor;                       //IT IS NOT USED!!
         if (drawingEditor != null) {
             drawingEditor.removePropertyChangeListener(eventHandler);
         }

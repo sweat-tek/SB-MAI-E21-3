@@ -31,9 +31,13 @@ import javax.swing.undo.*;
  */
 public class SplitAction extends CombineAction {
     public final static String ID = "edit.splitPath";
+
+    public static SplitAction create(DrawingEditor editor) {
+        return new SplitAction(editor);
+    }
     
     /** Creates a new instance. */
-    public SplitAction(DrawingEditor editor) {
+    private SplitAction(DrawingEditor editor) {
         super(editor, new SVGPathFigure(), false);
         labels.configureAction(this, ID);
     }

@@ -52,7 +52,7 @@ public class UngroupAction extends AbstractGroupAction {
 		return create(editor, new SVGGroupFigure());
 	}
 
-	public static UngroupAction create(DrawingEditor editor, CompositeFigure prototype) {
+	private static UngroupAction create(DrawingEditor editor, CompositeFigure prototype) {
 		UngroupAction ungroupAction = new UngroupAction(editor, prototype);
 		GroupAction groupAction = new GroupAction(editor, prototype);
 		ungroupAction.setGroupAction(groupAction);
