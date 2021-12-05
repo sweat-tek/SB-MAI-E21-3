@@ -179,10 +179,18 @@ public class ResizeHandleKit {
             N=W=S=E=vertical=horizontal=0;
             pressedKey=evt.getKeyCode();
             
-                if     (pressedKey==KeyEvent.VK_UP)       {vertical = -1;} //if up key is pressed elevate the handle by 1 pixel
-                else if(pressedKey==KeyEvent.VK_DOWN)     {vertical =  1;} //if down key is pressed lower the handle by 1 pixel
-                else if(pressedKey==KeyEvent.VK_LEFT)     {horizontal=-1;} //if left key is pressed push handle to left by 1 pixel
-                else if(pressedKey==KeyEvent.VK_RIGHT)    {horizontal= 1;} //if right key is pressed push handle to right by 1 pixel
+                if     (pressedKey==KeyEvent.VK_UP && r.height > 1){
+                    vertical = -1; //if up key is pressed elevate the handle by 1 pixel
+                }
+                else if(pressedKey==KeyEvent.VK_DOWN)     {
+                    vertical =  1; //if down key is pressed lower the handle by 1 pixel
+                }
+                else if(pressedKey==KeyEvent.VK_LEFT && r.width > 1){
+                    horizontal=-1;  //if left key is pressed push handle to left by 1 pixel
+                }
+                else if(pressedKey==KeyEvent.VK_RIGHT)    {
+                    horizontal= 1; //if right key is pressed push handle to right by 1 pixel
+                } 
 
                 if      (isNorth){N=vertical;}     // If it is a North handle
                 else if (isSouth){S=vertical;}     // If it is a South handle
