@@ -82,6 +82,7 @@ public class SVGCreateFromFileTool extends CreationTool {
         } else {
             fileDialog = null;
         }
+        
     }
 
     public boolean isUseFileDialog() {
@@ -90,118 +91,17 @@ public class SVGCreateFromFileTool extends CreationTool {
     @Override
     public void activate(DrawingEditor editor) {
         super.activate(editor);
-
         if (workerThread != null) {
             try {
                 workerThread.join();
             } catch (InterruptedException ex) {
-                // ignore
             }
         }
-
-        final File file;
-        if (useFileDialog) {
-           getFileDialog().setVisible(true);
-           if (getFileDialog().getFile() != null) {
-                file = new File(getFileDialog().getDirectory(), getFileDialog().getFile());
-            } else {
-                file = null;
-            }
-        } else {
-            if (getFileChooser().showOpenDialog(getView().getComponent()) == JFileChooser.APPROVE_OPTION) {
-                file = getFileChooser().getSelectedFile();
-            } else {
-                file = null;
-            }
-        }
+        
+        File file = setFileDialog();
 
         if (file != null) {
-            Worker worker;
-
-            if (file.getName().toLowerCase().endsWith(".svg") ||
-                    file.getName().toLowerCase().endsWith(".svgz")) {
-                prototype = ((Figure) groupPrototype.clone());
-                worker = new Worker() {
-
-                    public Object construct() {
-                        Drawing drawing = new DefaultDrawing();
-                        try {
-                            InputFormat in = (file.getName().toLowerCase().endsWith(".svg")) ? new SVGInputFormat() : new SVGZInputFormat();
-                            in.read(file, drawing);
-                        } catch (Throwable t) {
-                            return t;
-                        }
-                        return drawing;
-                    }
-
-                    public void finished(Object value) {
-                        if (value instanceof Throwable) {
-                            Throwable t = (Throwable) value;
-                            JOptionPane.showMessageDialog(getView().getComponent(),
-                                    t.getMessage(),
-                                    null,
-                                    JOptionPane.ERROR_MESSAGE);
-                            getDrawing().remove(createdFigure);
-                            fireToolDone();
-                        } else {
-                            Drawing drawing = (Drawing) value;
-                            CompositeFigure parent;
-                            if (createdFigure == null) {
-                                parent = (CompositeFigure) prototype;
-                                for (Figure f : drawing.getChildren()) {
-                                    parent.basicAdd(f);
-                                }
-                            } else {
-                                parent = (CompositeFigure) createdFigure;
-                                parent.willChange();
-                                for (Figure f : drawing.getChildren()) {
-                                    parent.add(f);
-                                }
-                                parent.changed();
-                            }
-                        }
-                    }
-                };
-            } else {
-                prototype = imagePrototype;
-                final ImageHolderFigure loaderFigure = ((ImageHolderFigure) prototype.clone());
-                worker = new Worker() {
-
-                    public Object construct() {
-                        try {
-                            ((ImageHolderFigure) loaderFigure).loadImage(file);
-                        } catch (Throwable t) {
-                            return t;
-                        }
-                        return null;
-                    }
-
-                    public void finished(Object value) {
-                        if (value instanceof Throwable) {
-                            Throwable t = (Throwable) value;
-                            JOptionPane.showMessageDialog(getView().getComponent(),
-                                    t.getMessage(),
-                                    null,
-                                    JOptionPane.ERROR_MESSAGE);
-                            getDrawing().remove(createdFigure);
-                            fireToolDone();
-                        } else {
-                            try {
-                                if (createdFigure == null) {
-                                    ((ImageHolderFigure) prototype).setImage(loaderFigure.getImageData(), loaderFigure.getBufferedImage());
-                                } else {
-                                    ((ImageHolderFigure) createdFigure).setImage(loaderFigure.getImageData(), loaderFigure.getBufferedImage());
-                                }
-                            } catch (IOException ex) {
-                                JOptionPane.showMessageDialog(getView().getComponent(),
-                                        ex.getMessage(),
-                                        null,
-                                        JOptionPane.ERROR_MESSAGE);
-                            }
-                        }
-                    }
-                };
-            }
+            Worker worker = checkFileType(file);
             workerThread = new Thread(worker);
             workerThread.start();
         } else {
@@ -210,6 +110,133 @@ public class SVGCreateFromFileTool extends CreationTool {
                 fireToolDone();
             }
         }
+    }
+
+    public Worker checkFileType(File file) {
+        Worker worker;
+        if (file.getName().toLowerCase().endsWith(".svg") ||
+                file.getName().toLowerCase().endsWith(".svgz")) {
+                String type = "svg";
+                prototype = ((Figure) groupPrototype.clone());
+                worker = initiateConstruction(file, type);
+            } else {
+                String type = "nonSVG";
+                prototype = imagePrototype;
+                worker = initiateConstruction(file, type);
+            }
+        return worker;
+    }
+
+    public Worker initiateConstruction(File file, String type) {
+        Worker worker;
+        final ImageHolderFigure loaderFigure = ((ImageHolderFigure) prototype.clone());
+        worker = new Worker() {
+            public Object construct() {
+                if(type.equals("svg")){
+                    return constructSVG(file);
+                }else{
+                    return constructPrototype(loaderFigure, file);
+                }
+            }
+            public void finished(Object value) {
+                if (value instanceof Throwable) {
+                    checkValidity(value);
+                } else {
+                    try {
+                        if(type.equals("svg")){
+                            initiateFigureAddition(value);
+                        }else{
+                            setImageWithBuffered(loaderFigure);
+                        }
+                    } catch (IOException ex) {
+                        showErrorMessage(ex);
+                    }
+                }
+            }
+        };
+        return worker;
+    }
+
+    
+    public Object constructSVG(File file) {
+                    Drawing drawing = new DefaultDrawing();
+                    try {
+                        InputFormat in = (file.getName().toLowerCase().endsWith(".svg")) ? new SVGInputFormat() : new SVGZInputFormat();
+                        in.read(file, drawing);
+                    } catch (Throwable t) {
+                        return t;
+                    }
+                    return drawing;
+                }
+    
+    public Object constructPrototype(ImageHolderFigure loaderFigure, File file) {
+                    try {
+                        ((ImageHolderFigure) loaderFigure).loadImage(file);
+                    } catch (Throwable t) {
+                        return t;
+                    }
+                    return null;
+                }
+    
+    public void setImageWithBuffered(ImageHolderFigure loaderFigure) throws IOException {
+                    if (createdFigure == null) {
+                        ((ImageHolderFigure) prototype).setImage(loaderFigure.getImageData(), loaderFigure.getBufferedImage());
+                    } else {
+                        ((ImageHolderFigure) createdFigure).setImage(loaderFigure.getImageData(), loaderFigure.getBufferedImage());
+                    }
+                }
+    
+    public void initiateFigureAddition(Object value) {
+                    Drawing drawing = (Drawing) value;
+                    CompositeFigure parent;
+                    if (createdFigure == null) {
+                        parent = (CompositeFigure) prototype;
+                    } else {
+                        parent = (CompositeFigure) createdFigure;
+                    }
+                    addFigureToParent(drawing, parent);
+                }
+
+    public void addFigureToParent(Drawing drawing, CompositeFigure parent) {
+        parent.willChange();
+        for (Figure f : drawing.getChildren()) {
+            parent.add(f);
+        }
+        parent.changed();
+    }
+
+    
+    public void checkValidity(Object value) throws HeadlessException {
+        showErrorMessage(value);
+        fireToolDone();
+                }
+    
+    public void showErrorMessage(Object value)throws HeadlessException{
+        Throwable t = (Throwable) value;
+        JOptionPane.showMessageDialog(getView().getComponent(),
+                            t.getMessage(),
+                            null,
+                            JOptionPane.ERROR_MESSAGE);
+    }
+
+    public File setFileDialog() throws HeadlessException {
+        File file = null;
+        if (useFileDialog) {
+            getFileDialog().setVisible(true);
+            if (getFileDialog().getFile() != null) {
+                file = new File(getFileDialog().getDirectory(), getFileDialog().getFile());
+            } 
+        } else {
+            file = setFileChooser(file);
+        }
+        return file;
+    }
+
+    public File setFileChooser(File file) throws HeadlessException {
+        if (getFileChooser().showOpenDialog(getView().getComponent()) == JFileChooser.APPROVE_OPTION) {
+            file = getFileChooser().getSelectedFile();
+        } 
+        return file;
     }
 
     protected Figure createFigure() {
