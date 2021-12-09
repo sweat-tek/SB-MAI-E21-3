@@ -28,11 +28,8 @@ import javax.swing.plaf.basic.*;
 public class PaletteButtonUI extends BasicButtonUI {
     // Shared UI object
     private static final PaletteButtonUI buttonUI = new PaletteButtonUI();
-
-
-    private PaletteButtonUI() {}
     
-    public static ComponentUI createUI() {
+      public static ComponentUI createUI(JComponent c) {
         return buttonUI;
     }
     // ********************************

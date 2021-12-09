@@ -95,12 +95,13 @@ public abstract class AbstractToolBar extends JDisclosureToolBar {
         if (this.editor != null) {
             this.removePropertyChangeListener(getDisclosureEventHandler());
         }
-          
+        
+        this.editor = editor;
         if (editor != null) {
             //init(); it is an empty method it should be removed
             setDisclosureState(Math.max(0, Math.min(getDisclosureStateCount(), prefs.getInt(getID() + ".disclosureState", DEFAULT_DISCLOSURE_STATE))));
             this.addPropertyChangeListener(getDisclosureEventHandler());
-            this.editor = editor;
+            
         } 
     }
 

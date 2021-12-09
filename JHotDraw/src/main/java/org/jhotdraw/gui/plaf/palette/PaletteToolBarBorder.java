@@ -137,8 +137,8 @@ public class PaletteToolBarBorder
     
     //TU MOGĘ NAPRAWIĆ TO CO SIĘ PSUJE PRZY WYSWIETLANIU DRAG INSETS
     
-    public Insets getDragInsets() {
-        return new Insets(barX,barY,barW,barH);
+    public Insets getDragInsets(Component c) {
+        return new Insets(0,18,0,0);
     }
    
 
@@ -152,7 +152,7 @@ public class PaletteToolBarBorder
         return (Insets) override.clone();
         }
         
-        return  getDragInsets();
+        return  getDragInsets(c);
     }
 
     /**

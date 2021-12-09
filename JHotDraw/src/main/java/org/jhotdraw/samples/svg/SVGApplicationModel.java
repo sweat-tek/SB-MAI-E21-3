@@ -101,8 +101,8 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         a.add(new DuplicateAction());
 
         a.add(null); // separator
-        a.add(GroupAction.create(editor, new SVGGroupFigure()));
-        a.add(UngroupAction.create(editor, new SVGGroupFigure()));
+        a.add(GroupAction.create(editor));
+        a.add(UngroupAction.create(editor));
         a.add(CombineAction.create(editor));
         a.add(SplitAction.create(editor));
 

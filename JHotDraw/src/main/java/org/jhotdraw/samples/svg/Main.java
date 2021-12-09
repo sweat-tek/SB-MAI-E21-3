@@ -32,8 +32,8 @@ public class Main {
         Application app;
         String os = System.getProperty("os.name").toLowerCase();
         if (os.startsWith("win")) {
-          //  app = new DefaultMDIApplication();
-            app = new DefaultSDIApplication();
+          //app = new DefaultMDIApplication();
+           app = new DefaultSDIApplication();
         } else {
             app = new DefaultSDIApplication();
         }

@@ -16,6 +16,7 @@ package org.jhotdraw.gui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicButtonUI;
 import org.jhotdraw.gui.plaf.palette.*;
 
 /**
@@ -58,7 +59,8 @@ public class JDisclosureToolBar extends JToolBar {
    
 
     private void setUpDisclosureButton() {
-        disclosureButton.setUI((PaletteButtonUI) PaletteButtonUI.createUI(this));
+        PaletteButtonUI btnUI =  (PaletteButtonUI) PaletteButtonUI.createUI(this);
+        disclosureButton.setUI(btnUI);
         disclosureButton.setBorderPainted(false);
         disclosureButton.setIcon(new DisclosureIcon());
         disclosureButton.setOpaque(false);

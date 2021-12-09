@@ -31,7 +31,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * @version 1.0.1 2007-07-28 Bounds were not computed correctly. 
  * <br>1.0 July 8, 2006 Created.
  */
-public class SVGGroupFigure extends AbstractCompositeFigure implements SVGFigure {
+public class SVGGroupFigure extends GroupFigure implements SVGFigure {
 
     private HashMap<AttributeKey, Object> attributes = new HashMap<AttributeKey, Object>();
 
