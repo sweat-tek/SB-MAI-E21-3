@@ -72,17 +72,23 @@ public class PaletteToolBarBorder
         setBorderStroke(1, g);    
         paintToolBarBgd(enabledStops, enabledStopColors, g);
         g.fillRect(barX, barY, barW-1, barH-2);
-       
-        Icon icon = (Icon) c.getClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY);
-        int textIconGap = (c.getClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY) instanceof Integer) ? 
-        (Integer) c.getClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY) : DEFAULT_ICON_GAP;
-        
-         setToolBarTitle(c, g, icon, textIconGap);
+           
+         setToolBarTitle(c, g, getIconProperty(c));
     }
   
+    private Icon getIcon(JToolBar c){
+        return (Icon) c.getClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY);
+    }
+    
+    private int getIconProperty( JToolBar c){
+        return (c.getClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY) instanceof Integer) ? 
+        (Integer) c.getClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY) : DEFAULT_ICON_GAP;
+    }
+    
 
-    private void setToolBarTitle(JToolBar c, Graphics2D g, Icon icon, int textIconGap) {
+    private void setToolBarTitle(JToolBar c, Graphics2D g, int textIconGap) {
         String theTitle = c.getName();
+        Icon icon = getIcon(c);
         if (theTitle != null) {
             FontMetrics fm = g.getFontMetrics();
             int titleW;
