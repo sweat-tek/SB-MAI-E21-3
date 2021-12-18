@@ -15,8 +15,8 @@ package org.jhotdraw.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicButtonUI;
 import org.jhotdraw.gui.plaf.palette.*;
 
 /**
@@ -46,6 +46,7 @@ public class JDisclosureToolBar extends JToolBar {
         if (disclosureButton == null) {
             disclosureButton = new JButton();
             setUpDisclosureButton();
+            
         }
         
         GridBagConstraints gbc;
@@ -54,6 +55,9 @@ public class JDisclosureToolBar extends JToolBar {
       
         putClientProperty(PaletteToolBarUI.TOOLBAR_INSETS_OVERRIDE_PROPERTY, new Insets(0, 0, 0, 0));
         putClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY, new EmptyIcon(10, 8));
+        
+       // setToolBarTitle(this, getIconProperty(this));
+        
     }
 
    
@@ -67,6 +71,7 @@ public class JDisclosureToolBar extends JToolBar {
     
         disclosureButton.putClientProperty(DisclosureIcon.CURRENT_STATE_PROPERTY, 1);
         disclosureButton.putClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY, 2);
+        
         disclosureButton.addActionListener((ActionEvent e) -> {
             int newState = ((Integer) disclosureButton.getClientProperty(DisclosureIcon.CURRENT_STATE_PROPERTY) + 1) %
                     (Integer) disclosureButton.getClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY);
@@ -120,10 +125,7 @@ public class JDisclosureToolBar extends JToolBar {
         return gbc;
     }
     
-    
 
-    
-   
     private void updateToolbarView(int oldValue, int newValue) {
         invalidate();
         Container parent = getParent();
@@ -149,6 +151,7 @@ public class JDisclosureToolBar extends JToolBar {
     protected JComponent getDisclosedComponent(int state) {
         return new JLabel(Integer.toString(state));
     }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
