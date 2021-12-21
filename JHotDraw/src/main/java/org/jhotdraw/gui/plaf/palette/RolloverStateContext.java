@@ -40,9 +40,6 @@ public class RolloverStateContext{
     //TEMPLATE METHOD SHOULD BE ALSO FOR --> installRolloverBorders() ETC WITH INSTAL...
     //template method
     public void setBorder(Component c, BorderState state, boolean isRollover){
-        //WHY IS THERE THIS IF??
-        if (true) 
-               return;
         if (c instanceof AbstractButton) {
             AbstractButton b = (AbstractButton) c;
             Border border = (Border) getBorder(b);
@@ -134,19 +131,8 @@ class RolloverBorderState extends BorderState {
         context.installBorders(c, this, IS_ROLLOVER_ENABLED);
     }
     
-    
-    
 
-    /*
-    private Border getRolloverBorder(AbstractButton b) {
-        Object borderProvider = UIManager.get("ToolBar.rolloverBorderProvider");
-        if (borderProvider == null) {
-            return new getBorder();
-        }
-        //return ((BorderProvider) borderProvider).getRolloverBorder(b);
-        return null;
-    }
-    */
+       
   /**
     * Sets the border of the component to have a rollover border which
     * was created by <code>createRolloverBorder</code>.

@@ -239,7 +239,7 @@ public class ToolsToolBar extends AbstractToolBar {
     }
     
     
-    //POWINNO BYĆ W KLASE AKCJI
+    
     public static Collection<Action> createSelectionActions(DrawingEditor editor) {
         LinkedList<Action> a = new LinkedList<>(); // Actions should be singletons
         a.add(new DuplicateAction());
