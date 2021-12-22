@@ -12,6 +12,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.Window;
 import java.awt.event.WindowListener;
 import java.lang.reflect.Constructor;
@@ -50,17 +51,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class PaletteToolBarUITest {
     
-    @Mock
+    PaletteToolBarUITestUtil testUtil;
     DragWindow dragWindow;
-    
-    @Mock
-    ToolBarDialog tbd;         
-    
+    ToolBarDialog tbd;          
     PaletteToolBarUI instance;
     JToolBar toolbar;
     Window window;
     JDialog dialog;
     Window frame;
+    Robot robot;
     
    public static final int HORIZONTAL = JToolBar.HORIZONTAL;
    public static final int VERTICAL   = JToolBar.VERTICAL;
@@ -69,25 +68,20 @@ public class PaletteToolBarUITest {
     @Before
     public void setUp() {
         
-        
-     instance = new PaletteToolBarUI();  
-     dialog = new JDialog();
-     frame = new Frame();
-     toolbar = new JToolBar();
-     toolbar.setSize(100,100);
-     toolbar.setName("SUT");
-     instance.toolBar = toolbar;
-     //frame.add(toolbar);
-     //window = SwingUtilities.getWindowAncestor(toolbar); 
+    testUtil = new PaletteToolBarUITestUtil();
+    instance = new PaletteToolBarUI();  
+    dialog = new JDialog();
+    frame = new Frame();
+    toolbar = new JToolBar();
+    toolbar.setSize(100,100);
+    toolbar.setName("SUT");
+    instance.toolBar = toolbar;
+    robot = new Robot();
+     
     
    
     }
     
-    @After
-    public void tearDown() {
-    }
-
-
     @Test
     public void testCreateUI() {
         JComponent c = (JComponent)new JToolBar();
@@ -138,6 +132,7 @@ public class PaletteToolBarUITest {
     public void testCreateDragWindow() throws Exception {
         System.out.println("createDragWindow");
         instance.installUI(toolbar);
+        
         Class<?> dragWindowClass = Class.forName("org.jhotdraw.gui.plaf.palette.PaletteToolBarUI$DragWindow");
         
         Constructor<?> constructor = dragWindowClass.getDeclaredConstructor(PaletteToolBarUI.class, Window.class);
@@ -331,15 +326,34 @@ public class PaletteToolBarUITest {
 
     /**
      * Test of dragTo method, of class PaletteToolBarUI.
+     * @throws java.lang.Exception
      */
     @Test
-    public void testDragTo() {
+    public void testDragTo() throws Exception {
+        
         System.out.println("dragTo");
-        Point position = null;
-        Point origin = null;
-        PaletteToolBarUI instance = new PaletteToolBarUI();
-        instance.dragTo(position, origin);
-        // TODO review the generated test code and fail("The test case is a prototype.");
+        PaletteToolBarUI expected = new PaletteToolBarUI();
+        expected.toolBar = toolbar;
+        instance.toolBar = toolbar;
+                     
+        RootPaneContainer drgWindow = (RootPaneContainer)testUtil.createDragWindowMethod().invoke(expected, expected.toolBar);
+        expected.dragWindow = (DragWindow) drgWindow;
+        expected.dragWindow.setVisible(true);
+        Point currentLocation =((Component) drgWindow).getLocationOnScreen();
+        Point dragPoint = new Point(currentLocation.x + 100, currentLocation.y);
+        PaletteToolBarUITestUtil.dragComponent(robot,currentLocation.x , currentLocation.y, dragPoint.x, dragPoint.y);
+        
+        instance.dragTo(dragPoint, currentLocation);
+        
+        Point global = new Point(currentLocation.x + dragPoint.x,
+                        currentLocation.y + dragPoint.y);
+        
+         Point comparisonPoint = (Point) testUtil.getComparisonPointMethod().invoke(expected, global); 
+         
+        assertEquals(testUtil.getDockingConstraintMethod().invoke(expected,toolbar.getParent(),
+                            comparisonPoint), testUtil.calculateConstraintMethod().invoke(expected));
+        
+        assertEquals(((Component)instance.dragWindow).getLocationOnScreen(),dragPoint);
     }
 
     /**
@@ -356,7 +370,6 @@ public class PaletteToolBarUITest {
         
  
         instance.floatAt(position, origin);
-        // TODO review the generated test code and remove the default call to fail.
         
     }
 
@@ -372,7 +385,7 @@ public class PaletteToolBarUITest {
         System.out.println("paintDragWindow");
         Rectangle rec = new Rectangle(0,0,10,10);
         Graphics2D g = rec.
-        PaletteToolBarUI instance = new PaletteToolBarUI();
+ 
         instance.paintDragWindow(g);
         // TODO review the generated test code and remove the default call to fail.
        

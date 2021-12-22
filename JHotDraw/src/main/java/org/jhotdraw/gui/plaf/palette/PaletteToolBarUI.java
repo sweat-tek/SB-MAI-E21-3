@@ -112,10 +112,13 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
         installListeners();
         installKeyboardActions();
 
-       
-        floating = false;  
+        dragWindow = null;
+        
+        floating = false; 
+        
         floatingToolBar = null;
-
+        dragWindow = null;
+        dockingSource =null;
         setOrientation(toolBar.getOrientation());
         LookAndFeel.installProperty(c, "opaque", Boolean.TRUE);
 
@@ -139,7 +142,7 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
         }
         floatingToolBar = null;
         dragWindow = null;
-        dockingSource = null;
+        dockingSource =null;
 
         c.putClientProperty(FOCUSED_COMP_INDEX, (Integer)focusedCompIndex);
     }
@@ -519,30 +522,32 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     
    
     private Integer calculateConstraint() {
-        Integer constraint = null;
         LayoutManager lm = dockingSource.getLayout();
         if (lm instanceof BoxLayout) {
-            for (int i = 0, n = dockingSource.getComponentCount(); i < n; i++) {
+            for (int i = 0; i < dockingSource.getComponentCount(); i++) {
                 if (dockingSource.getComponent(i) == toolBar) {
-                    constraint = new Integer(i);
-                    break;
+                    return i;
                 }
             }
         }
-        return (constraint != null) ? constraint : constraintBeforeFloating;
+        return constraintBeforeFloating;
     }
 
+    
+    public Container getDockingSource(){
+        return dockingSource;
+    }
+    
     private Integer getDockingConstraint(Component c, Point p) {
         if (p != null && c.contains(p)) {
-            for (int i = 0, n = dockingSource.getComponentCount(); i < n; i++) {
+            for (int i = 0; i < dockingSource.getComponentCount(); i++) {
                 Component child = dockingSource.getComponent(i);
                 Point childP = new Point(p.x - child.getX(), p.y - child.getY());
                 if (child.contains(childP)) {
-                    return Math.min(n - 1, ((childP.x <= child.getWidth()) ? i : i + 1));
+                    return Math.min(dockingSource.getComponentCount() - 1, ((childP.x <= child.getWidth()) ? i : i + 1));
                 }
             }
-            if (dockingSource.getComponentCount() == 0 ||
-                    p.x < dockingSource.getComponent(0).getX()) {
+            if (dockingSource.getComponentCount() == 0 || p.x < dockingSource.getComponent(0).getX()) {
                 return 0;
             }
             return dockingSource.getComponentCount() - 1;
@@ -605,7 +610,7 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
                 }
 
                 dragWindow.setLocation(dragPoint.x, dragPoint.y);
-                if (dragWindow.isVisible() == false) {
+                if (!dragWindow.isVisible()) {
                     dragWindow.setSize(toolBar.getWidth(), toolBar.getHeight());
                     dragWindow.setVisible(true);
                    
@@ -1095,6 +1100,7 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
             if (floatingToolBar instanceof Window) {
                 ((Window) floatingToolBar).setVisible(false);
             }
+            
             floatingToolBar.getContentPane().remove(toolBar);
             Integer constraint = getDockingConstraint(dockingSource, p);
            
@@ -1104,9 +1110,11 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
             if (dockingSource == null) {
                 dockingSource = toolBar.getParent();
             }
+            
             if (propertyListener != null) {
                 UIManager.removePropertyChangeListener(propertyListener);
             }
+            
             dockingSource.add(toolBar, constraint.intValue()); 
             updateAfterFloating();
             return isFloatable;
