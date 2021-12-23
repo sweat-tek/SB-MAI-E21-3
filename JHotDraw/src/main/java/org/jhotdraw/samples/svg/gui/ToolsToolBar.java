@@ -58,12 +58,12 @@ public class ToolsToolBar extends AbstractToolBar {
     protected JComponent createDisclosedComponent(int state) {
       JPanel panel = null;
       if(state == DISPLAY_COMPONENT)
-        panel = getComponentDisplayed();  
+        panel = getComponentDisplayed(panel);  
       return panel;
     }
 
-    private JPanel getComponentDisplayed() throws MissingResourceException { 
-        JPanel p = new JPanel();
+    private JPanel getComponentDisplayed(JPanel p) { 
+        p = new JPanel();
         setToolBarContainer(p);
       
         

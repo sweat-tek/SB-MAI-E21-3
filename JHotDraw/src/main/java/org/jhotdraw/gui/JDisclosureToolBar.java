@@ -137,16 +137,18 @@ public class JDisclosureToolBar extends JToolBar {
     
 
     //Uzywana wewnętrznie 
-    private void updateToolbarView(int oldValue, int newValue) {
+    public void updateToolbarView(int oldValue, int newValue) {
         invalidate();
-        Container parent = getParent();
-        while (parent.getParent() != null && !parent.getParent().isValid()) { 
-            parent = parent.getParent();
-        }
-        parent.validate();
-        repaint();
+        if (getParent() != null){
+            Container parent = getParent();
+            while (parent.getParent() != null && !parent.getParent().isValid()) { 
+                parent = parent.getParent();
+            }
+            parent.validate();
+            repaint();
 
-        firePropertyChange(DISCLOSURE_STATE_PROPERTY, oldValue, newValue);
+            firePropertyChange(DISCLOSURE_STATE_PROPERTY, oldValue, newValue);
+        }
     }
     
     

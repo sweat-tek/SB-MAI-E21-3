@@ -522,12 +522,14 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     }
     
    
-    private Integer calculateConstraint() {
-        LayoutManager lm = dockingSource.getLayout();
-        if (lm instanceof BoxLayout) {
-            for (int i = 0; i < dockingSource.getComponentCount(); i++) {
-                if (dockingSource.getComponent(i) == toolBar) {
-                    return i;
+    public Integer calculateConstraint() {
+        if (dockingSource != null){
+            LayoutManager lm = dockingSource.getLayout();
+            if (lm instanceof BoxLayout) {
+                for (int i = 0; i < dockingSource.getComponentCount(); i++) {
+                    if (dockingSource.getComponent(i) == toolBar) {
+                        return i;
+                    }
                 }
             }
         }

@@ -38,6 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.assertj.core.api.Assertions.*;
+import org.jhotdraw.draw.DefaultDrawingEditor;
+import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.gui.plaf.palette.PaletteToolBarUI.DragWindow;
 import org.jhotdraw.gui.plaf.palette.PaletteToolBarUI.ToolBarDialog;
 import org.jhotdraw.samples.svg.gui.ToolsToolBar;
@@ -285,34 +287,34 @@ public class PaletteToolBarUITest {
      */
     @Test
     public void testPaintDragWindow() throws Exception{
-        frame.add(toolbar); 
-       toolbar.setSize(18,18); 
+       toolbar = (JToolBar) testUtil.getToolsToolBarConstructor().newInstance();
+       org.jhotdraw.draw.DefaultDrawingEditor editor = (org.jhotdraw.draw.DefaultDrawingEditor) testUtil.getDefaultDrawingEditorConstructor().newInstance();
+       
+       ((org.jhotdraw.samples.svg.gui.AbstractToolBar)toolbar).setEditor((DrawingEditor) editor );
+       JPanel panel = null;
+       panel = (JPanel) testUtil.getCompDispToolsToolBarMethod().invoke((ToolsToolBar) toolbar, panel);
+       panel.add(toolbar);
        toolbar.setVisible(true);
        toolbar.setFloatable(true); 
        Point currentPoint = new Point(100,100);
        toolbar.setLocation(currentPoint);
-       instance.createUI((JComponent) toolbar);
-       instance.toolBar.setVisible(true);
-       
-      
-       Point newPosition = new Point(150,100);
-       
-     
-       instance.dragTo(newPosition, currentPoint);
-       instance.floatAt(newPosition, currentPoint);
-       
-       DragWindow drgWindow = instance.createDragWindow(instance.toolBar);
-       instance.dragWindow = drgWindow;
-       
-       BufferedImage image = new BufferedImage(18, 18, BufferedImage.TYPE_INT_ARGB);
-       Graphics2D graphics = image.createGraphics();
-       
-       testUtil.paintDragWindowMethod().invoke(drgWindow,(Graphics) graphics);
-       
-        //KONIEC HERE  
-       assertEquals(graphics.getColor(), drgWindow);
-       assertEquals(drgWindow.getGraphics().getClipBounds(), new Rectangle(0, 0, drgWindow.getWidth(), drgWindow.getHeight()));
+       instance.installUI((JComponent) toolbar);
 
+       Point newPosition = new Point(150,100);
+   
+       instance.dragTo(newPosition, currentPoint);
+       
+
+       PaletteToolBarUI expected = new PaletteToolBarUI();
+       expected.installUI((JComponent) toolbar);
+       
+       DragWindow drgWindow = expected.createDragWindow(expected.toolBar);
+       expected.dragWindow = drgWindow;
+       
+       
+        assertEquals(expected.dragWindow.getBorderColor(), instance.dragWindow.getBorderColor());
+        assertEquals(expected.dragWindow.getGraphics(), instance.dragWindow.getGraphics());
+        assertEquals(expected.dragWindow.getSize(), instance.dragWindow.getSize());
        
     }
 

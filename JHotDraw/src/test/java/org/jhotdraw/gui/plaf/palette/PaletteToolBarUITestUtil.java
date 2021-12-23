@@ -15,6 +15,7 @@ import java.awt.event.InputEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import sun.java2d.SunGraphics2D;
 
@@ -50,6 +51,16 @@ public class PaletteToolBarUITestUtil {
         return Class.forName("org.jhotdraw.samples.svg.gui.ToolsToolBar");
     }
     
+    public Class getDefautltDrawingEditorClass() throws Exception{
+        return Class.forName("org.jhotdraw.draw.DefaultDrawingEditor");
+    }
+    
+    public Constructor getDefaultDrawingEditorConstructor() throws Exception{
+        Constructor<?> getDefaultDrawingEditorConstructor = getDefautltDrawingEditorClass().getConstructor();
+        getDefaultDrawingEditorConstructor.setAccessible(true);
+        return getDefaultDrawingEditorConstructor;
+    }
+    
     public Constructor getToolsToolBarConstructor() throws Exception{
         Constructor<?> getToolsToolBarConstructor = getToolsToolBarClass().getConstructor();
         getToolsToolBarConstructor.setAccessible(true);
@@ -57,7 +68,7 @@ public class PaletteToolBarUITestUtil {
     }
     
     public Method getCompDispToolsToolBarMethod() throws Exception{
-        Method getComponentDisplayedToolsToolbar = getToolsToolBarClass().getDeclaredMethod("getComponentDisplayed");
+        Method getComponentDisplayedToolsToolbar = getToolsToolBarClass().getDeclaredMethod("getComponentDisplayed", JPanel.class);
         getComponentDisplayedToolsToolbar.setAccessible(true);
         return getComponentDisplayedToolsToolbar;
     }
