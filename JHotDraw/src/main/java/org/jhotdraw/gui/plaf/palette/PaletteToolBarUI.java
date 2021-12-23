@@ -224,19 +224,18 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
         floatingBorderColor = null;
         border.setRolloverContext(new NormalBorderState(border.getContext()));
         border.installRolloverContext(toolBar);
-  
-        //rolloverBorder = null;
-        //nonRolloverBorder = null;
-        //nonRolloverToggleBorder = null;
     }
 
     //REFUSED BEQUEST
     protected void installComponents() {
+        
     }
     
     //REFUSED BEQUEST
     protected void uninstallComponents() {
     }
+    
+    
 
     protected void installListeners() {
         dockingListener = createDockingListener();
@@ -559,7 +558,16 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     }
 
     
+    public Point getDragPoint(Point position, Point origin){
+        
+        Point offset = dragWindow.getOffset();
+        if (offset == null) { 
+            offset = new Point(toolBar.getWidth() / 2, toolBar.getHeight() / 2);
+            dragWindow.setOffset(new Point(toolBar.getWidth() / 2, toolBar.getHeight() / 2));
+        }
 
+        return new Point(origin.x + position.x - offset.x, origin.y + position.y - offset.y);
+    }
     
     public void dragTo(Point position, Point origin) {
         if (toolBar.isFloatable()) {
@@ -567,31 +575,18 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
                 if (dragWindow == null) {
                     dragWindow = createDragWindow(toolBar); 
                 }
-                
-                Point offset = dragWindow.getOffset();
-                
-                if (offset == null) { 
-                   Dimension size = toolBar.getSize();
-                    offset = new Point(size.width / 2, size.height / 2);
-                    dragWindow.setOffset(offset);
-                }
-                
-               
-                Point global = new Point(origin.x + position.x,
-                        origin.y + position.y);
-                
-                
-                Point dragPoint = new Point(global.x - offset.x,
-                        global.y - offset.y);
+        
+                Point dragPoint = getDragPoint(position, origin);
+                 
                 
                 if (dockingSource == null) {
                     dockingSource = toolBar.getParent();
                 }
                 
                 constraintBeforeFloating = calculateConstraint(); 
+                 
                 
-                
-                Point comparisonPoint = getComparisonPoint(global);      
+                Point comparisonPoint = getComparisonPoint(new Point(origin.x + position.x , origin.y + position.y));      
                 if (canDock(dockingSource, comparisonPoint)) {
                     dragWindow.setBackground(getDockingColor());                
                     Object constraint = getDockingConstraint(dockingSource,
@@ -622,6 +617,8 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
             }
         }
     }
+
+   
 
     
     public void floatAt(Point position, Point origin) {

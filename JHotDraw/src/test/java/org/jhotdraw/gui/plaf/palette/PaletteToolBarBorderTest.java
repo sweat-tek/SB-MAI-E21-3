@@ -19,8 +19,6 @@ import static org.junit.Assert.*;
  */
 public class PaletteToolBarBorderTest {
     
-    public PaletteToolBarBorderTest() {
-    }
     
     @Before
     public void setUp() {

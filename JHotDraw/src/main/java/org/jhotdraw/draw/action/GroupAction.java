@@ -43,6 +43,10 @@ public class GroupAction extends AbstractGroupAction {
 
     public final static String ID = "edit.groupSelection";
 
+    static GroupAction create(DrawingEditor editor, SVGGroupFigure svgGroupFigure) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private UngroupAction ungroupAction;
 
     GroupAction(DrawingEditor editor, CompositeFigure prototype) {

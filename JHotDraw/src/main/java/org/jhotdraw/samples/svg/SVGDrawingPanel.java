@@ -88,8 +88,7 @@ public class SVGDrawingPanel extends JPanel {
         undoManager = new UndoRedoManager();
         
          setEditor(new DefaultDrawingEditor());
-         //REFACTORING
-         //REMOVE FROM CONSTRUCTOR, BECOSE AS A FACT THAT THIS IS AN OVERRIDABLE METHOD, SOME BUG MAY OCCURS ASOCCIATED WITH A PARTIAL INITIALIZATION
+        
          editor.setHandleAttribute(HandleAttributeKeys.HANDLE_SIZE, 7); //SPRAWDZ BO TA 7 niewoadomo co znaczy 
 
         QuadTreeDrawing drawing = new QuadTreeDrawing();
@@ -112,12 +111,8 @@ public class SVGDrawingPanel extends JPanel {
          */
         
         // Sort the toolbars according to the user preferences
-        ArrayList<JToolBar> sortme = new ArrayList<JToolBar>();
-        for (Component c : toolsPane.getComponents()) {
-            if (c instanceof JToolBar) {
-            sortme.add((JToolBar) c);
-                    }
-        }
+        ArrayList<JToolBar> sortme =  getAllToolBars();
+       
         
         Collections.sort(sortme, new Comparator<JToolBar>() {
             public int compare(JToolBar tb1, JToolBar tb2) {
@@ -147,6 +142,15 @@ public class SVGDrawingPanel extends JPanel {
             public void componentRemoved(ContainerEvent e) {
             }
         });
+    }
+
+    public ArrayList<JToolBar> getAllToolBars() {
+        ArrayList<JToolBar> toolbars = new ArrayList<>();
+        for (Component c : toolsPane.getComponents()) {
+            if (c instanceof JToolBar)
+                toolbars.add((JToolBar)c); 
+        }
+        return toolbars;
     }
 
     public void setDrawing(Drawing d) {
@@ -270,6 +274,16 @@ public class SVGDrawingPanel extends JPanel {
     public JComponent getComponent() {
         return this;
     }
+    
+    public Component getToolBar(String nemID){ 
+        for (Component c : toolsPane.getComponents()) {
+            if (c instanceof JToolBar && c.getName().equals(nemID)) {
+                return c;
+            }
+        }
+        return toolsPane.getComponents()[0];
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.jhotdraw.samples.svg.gui.ActionsToolBar actionToolBar;
     private org.jhotdraw.samples.svg.gui.AlignToolBar alignToolBar;

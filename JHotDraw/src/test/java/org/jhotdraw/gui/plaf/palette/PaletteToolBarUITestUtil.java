@@ -168,7 +168,7 @@ public class PaletteToolBarUITestUtil {
     }
     
     
-    public static void  clickMouse(String button, Robot r, int delay){
+    public static void clickMouse(String button, Robot r, int delay){
         int mouse;
         switch (button) {
             case "left": mouse = InputEvent.BUTTON1_MASK;break;
@@ -180,6 +180,15 @@ public class PaletteToolBarUITestUtil {
             r.mouseRelease(mouse);
 
     }
+    
+    public void  MoveMouseOnComponent(Robot r, Component c){
+        moveMouse(r,c.getLocationOnScreen().x, c.getLocationOnScreen().y);
+    }
+    
+   
+    
+    
+    
     
     
     public static void ClickOnComponent(Robot r, int x, int y){

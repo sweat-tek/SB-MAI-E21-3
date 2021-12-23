@@ -51,7 +51,7 @@ public class FontToolBar extends AbstractToolBar {
         ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.svg.Labels");
         setName(labels.getString("font.toolbar"));
         JFontChooser.loadAllFonts();
-        setDisclosureStateCount(3);
+        setDisclosureStateCount(3); 
     }
 
     @Override
@@ -355,7 +355,7 @@ public class FontToolBar extends AbstractToolBar {
     }
     @Override
     protected int getDefaultDisclosureState() {
-        return 1;
+        return 3;
     }
 
     /** This method is called from within the constructor to
