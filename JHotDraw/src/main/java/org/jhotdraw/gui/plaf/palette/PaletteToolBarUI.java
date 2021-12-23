@@ -13,6 +13,7 @@
  */
 package org.jhotdraw.gui.plaf.palette;
 
+import com.sun.istack.internal.NotNull;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
@@ -43,7 +44,7 @@ import javax.swing.plaf.*;
 public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
 
     
-    protected  JToolBar toolBar;
+    public  JToolBar toolBar;
     
     private boolean floating;
     //private int floatingX;
@@ -168,7 +169,7 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
         return propertyListener;
     }
     
-    public int getConstraingBeforeFloating(){
+    public int getConstraintBeforeFloating(){
         return constraintBeforeFloating;
     }
     
@@ -558,7 +559,7 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     
 
     
-    protected void dragTo(Point position, Point origin) {
+    public void dragTo(Point position, Point origin) {
         if (toolBar.isFloatable()) {
             try {
                 if (dragWindow == null) {
@@ -621,14 +622,20 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     }
 
     
-    protected void floatAt(Point position, Point origin) {
+    public void floatAt(Point position, Point origin) {
 
         if (dragWindow.getOffset() == null) {
             dragWindow.setOffset(position);
         }
 
         Point global = new Point(origin.x + position.x,origin.y + position.y);
+        
+        if (dockingSource == null) {
+            dockingSource = toolBar.getParent();
+        }
+         
         Point comparisonPoint = getComparisonPoint(global);
+        
         boolean isDockingPossible = canDock(dockingSource, comparisonPoint);
 
 
@@ -638,6 +645,7 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     }
     
     private Point getComparisonPoint(Point global) {
+        dockingSource.setVisible(true);
         Point dockingPosition = dockingSource.getLocationOnScreen();
         return new Point(global.x - dockingPosition.x, global.y - dockingPosition.y);
     }
@@ -676,22 +684,16 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
         return (rolloverProperty != null) ? rolloverProperty : UIManager.get(ROLLOVER);
     }
 
-    /**
-     * Paints the contents of the window used for dragging.
-     *
-     * @param g Graphics to paint to.
-     * @throws NullPointerException is <code>g</code> is null
-     * @since 1.5
-     */
-    
-    protected void paintDragWindow(Graphics g) {
-        toolBar.paint(g);
-        g.setColor(dragWindow.getBorderColor());
-        g.drawRect(0, 0, dragWindow.getWidth(), dragWindow.getHeight());
-  
-    }
-    
+//    /**
+//     * Paints the contents of the window used for dragging.
+//     *
+//     * @param g Graphics to paint to.
+//     * @throws NullPointerException if <code>g</code> is null
+//     * @since 1.5
+//     */
+//    
 
+    
     private class Handler implements ContainerListener,
             FocusListener, MouseInputListener, PropertyChangeListener {
         
@@ -949,12 +951,20 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
         private int orientation = toolBar.getOrientation();
         private Point offset; // offset of the mouse cursor inside the DragWindow
        
+        
+        private void paintDragWindow(@NotNull Graphics g) {
+            toolBar.paint(g);
+            g.setColor(dragWindow.getBorderColor());
+            g.drawRect(0, 0, dragWindow.getWidth(), dragWindow.getHeight());
+  
+        }
 
         DragWindow(Window w) {
             super(w);
           
             getContentPane().add(new JPanel() {
-
+                
+                @Override
                 public void paintComponent(Graphics g) {
                     paintDragWindow(g);
                 }
@@ -1036,14 +1046,20 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     }
     
      
-    class FloatingManager{ 
+    public class FloatingManager{ 
+        
         FloatingStrategy strategy;
         
-        FloatingManager(boolean isFloatingAllowed, boolean setFloating){
-            if(isFloatingAllowed && setFloating)
+        public FloatingManager(boolean isFloatingAllowed, boolean setFloating){
+            setStrategy(isFloatingAllowed, setFloating);
+        }
+
+        private void setStrategy(boolean isFloatingAllowed1, boolean setFloating) {
+            if (isFloatingAllowed1 && setFloating) {
                 strategy = new FloatableStrategy();
-            else
+            } else {
                 strategy = new NonFloatableStrategy(); 
+            }
         }
         
         public boolean applyStrategy(boolean setFloating, Point p){
@@ -1056,9 +1072,12 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
         
           
     }
+    
     abstract class FloatingStrategy{
         boolean isFloatable;
         abstract boolean setFloating(boolean setfloating, Point p);
+        
+        
         
         boolean isFloatable(){
             return isFloatable;
@@ -1066,7 +1085,7 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     }
     
     
-    class FloatableStrategy extends FloatingStrategy{
+    public class FloatableStrategy extends FloatingStrategy{
       
         public FloatableStrategy(){
             isFloatable = true;
@@ -1089,7 +1108,7 @@ public class PaletteToolBarUI extends ComponentUI implements SwingConstants {
     }
     
     
-    class NonFloatableStrategy extends FloatingStrategy{
+    public class NonFloatableStrategy extends FloatingStrategy{
         
           public NonFloatableStrategy(){
             isFloatable = false;

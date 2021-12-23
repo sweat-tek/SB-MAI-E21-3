@@ -41,11 +41,11 @@ import org.jhotdraw.util.ResourceBundleUtil;
  */
 public class ToolsToolBar extends AbstractToolBar {
     
-    private static final int DISPLAY_COMPONENT = 1;
-    private ResourceBundleUtil labels;
-    private final static Action SEPARATOR = null;
-    private static final int DEFAULT_DISCLOSURE_STATE = 1;
-    private static final String NAME_ID = "tools";
+    public static final int DISPLAY_COMPONENT = 1;
+    public ResourceBundleUtil labels;
+    public final static Action SEPARATOR = null;
+    public static final int DEFAULT_DISCLOSURE_STATE = 1;
+    public static final String NAME_ID = "tools";
     /**
      * Creates new instance.
      */
@@ -58,12 +58,12 @@ public class ToolsToolBar extends AbstractToolBar {
     protected JComponent createDisclosedComponent(int state) {
       JPanel panel = null;
       if(state == DISPLAY_COMPONENT)
-        panel = getComponentDisplayed(panel);  
+        panel = getComponentDisplayed();  
       return panel;
     }
 
-    private JPanel getComponentDisplayed(JPanel p) throws MissingResourceException { 
-        p = new JPanel();
+    private JPanel getComponentDisplayed() throws MissingResourceException { 
+        JPanel p = new JPanel();
         setToolBarContainer(p);
       
         
@@ -82,13 +82,13 @@ public class ToolsToolBar extends AbstractToolBar {
         return p;
     }
 
-    private void setToolBarContainer(JPanel p) {
+    public void setToolBarContainer(JPanel p) {
         p.setOpaque(false);
         p.setBorder(new EmptyBorder(5, 5, 5, 8));
         p.setLayout(new GridBagLayout());
     }
 
-    private void installSelectionToolButton(JPanel p) {
+    public void installSelectionToolButton(JPanel p) {
         AbstractButton btn;
         
         // ----------------------------------------------------
@@ -102,7 +102,7 @@ public class ToolsToolBar extends AbstractToolBar {
         labels.configureToolBarButton(btn, "selectionTool");
     }
 
-    private void installRectangleButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
+    public void installRectangleButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
         AbstractButton btn;
         CreationTool creationTool;
         // ----------------------------------------------------
@@ -114,7 +114,7 @@ public class ToolsToolBar extends AbstractToolBar {
         p.add(btn,createGridBagConstraints(0, 1 ,new Insets(3, 0, 0, 0)));
     }
 
-    private void installEllipseButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
+    public void installEllipseButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
         
         AbstractButton btn;
         CreationTool creationTool;
@@ -127,14 +127,14 @@ public class ToolsToolBar extends AbstractToolBar {
         p.add(btn, createGridBagConstraints(1, 1, new Insets(3, 3, 0, 0)));
     }
 
-    private HashMap<AttributeKey, Object> createNonDefaultAttributes() {
+    public HashMap<AttributeKey, Object> createNonDefaultAttributes() {
         HashMap<AttributeKey, Object> attributes;
         attributes = new HashMap<AttributeKey, Object>();
         // ----------------------------------------------------
         return attributes;
     }
 
-    private void installPolygonButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
+    public void installPolygonButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
         
         AbstractButton btn;
         PathTool pathTool;
@@ -148,7 +148,7 @@ public class ToolsToolBar extends AbstractToolBar {
         p.add(btn, createGridBagConstraints(2, 1, new Insets(3, 3, 0, 0)));
     }
 
-    private void installScribbleButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
+    public void installScribbleButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
         
         AbstractButton btn;
         PathTool pathTool;
@@ -161,7 +161,7 @@ public class ToolsToolBar extends AbstractToolBar {
         p.add(btn, createGridBagConstraints(2, 0, new Insets(0, 3, 0, 0)));
     }
 
-    private void installLineButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
+    public void installLineButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
         
         AbstractButton btn;
         CreationTool creationTool;
@@ -174,14 +174,14 @@ public class ToolsToolBar extends AbstractToolBar {
         p.add(btn, createGridBagConstraints(1, 0, new Insets(0, 3, 0, 0)));
     }
 
-    private HashMap<AttributeKey, Object> createOpenShapeAttributes() {
+    public HashMap<AttributeKey, Object> createOpenShapeAttributes() {
         HashMap<AttributeKey, Object> attributes = new HashMap<>();
         attributes.put(AttributeKeys.FILL_COLOR, null);
         attributes.put(CLOSED, false);
         return attributes;
     }
 
-    private void installCreateTextButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
+    public void installCreateTextButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
         
         AbstractButton btn;
         TextCreationTool textTool;
@@ -195,7 +195,7 @@ public class ToolsToolBar extends AbstractToolBar {
         p.add(btn, createGridBagConstraints(0, 2, new Insets(3, 0, 0, 0)));
     }
 
-    private void installTextAreaButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
+    public void installTextAreaButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
         
         TextAreaCreationTool textAreaTool;
         AbstractButton btn;
@@ -210,14 +210,14 @@ public class ToolsToolBar extends AbstractToolBar {
         p.add(btn, createGridBagConstraints(1, 2, new Insets(3, 3, 0, 0)));
     }
 
-    private HashMap<AttributeKey, Object> setTextAttributes() {
+    public HashMap<AttributeKey, Object> setTextAttributes() {
         HashMap<AttributeKey, Object> attributes = new HashMap<>();
         attributes.put(AttributeKeys.FILL_COLOR, Color.black);
         attributes.put(AttributeKeys.STROKE_COLOR, null);
         return attributes;
     }
 
-    private void installAddImageButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
+    public void installAddImageButton(HashMap<AttributeKey, Object> attributes, JPanel p) {
         
         AbstractButton btn;
         SVGCreateFromFileTool imageTool;
@@ -231,7 +231,7 @@ public class ToolsToolBar extends AbstractToolBar {
         p.add(btn, createGridBagConstraints(2, 2, new Insets(3, 3, 0, 0)));
     }
 
-    private HashMap<AttributeKey, Object> setAddImageAttributes() {
+    public HashMap<AttributeKey, Object> setAddImageAttributes() {
         HashMap<AttributeKey, Object> attributes = new HashMap<AttributeKey, Object>();
         attributes.put(AttributeKeys.FILL_COLOR, null);
         attributes.put(AttributeKeys.STROKE_COLOR, null);

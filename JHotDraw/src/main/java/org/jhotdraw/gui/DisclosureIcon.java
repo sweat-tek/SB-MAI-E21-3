@@ -24,16 +24,23 @@ import javax.swing.*;
  * @version 1.0 Apr 12, 2008 Created.
  */
 public class DisclosureIcon implements Icon {
-    /**
-     * This client property needs to be set on the component.
-     * The value must be a positive Integer. 
-     */
-    public final static String STATE_COUNT_PROPERTY = "DisclosureIcon.numberOfStates";
+    private int width;
+    private int height;
+     public final static String STATE_COUNT_PROPERTY = "DisclosureIcon.numberOfStates";
+    public final static int ICON_HEIGHT = 8;
+    public final static int ICON_WIDTH =10;
     /**
      * This client property needs to be set on the component.
      * The value must be a positive Integer. 
      */
     public final static String CURRENT_STATE_PROPERTY = "DisclosureIcon.currentState";
+    
+   
+    /**
+     * This client property needs to be set on the component.
+     * The value must be a positive Integer. 
+     */
+   
 
     public void paintIcon(Component component, Graphics g, int x, int y) {
         JComponent c = (JComponent) component;
@@ -54,11 +61,11 @@ public class DisclosureIcon implements Icon {
     }
 
     public int getIconWidth() {
-        return 10;
+        return ICON_WIDTH;
     }
 
     public int getIconHeight() {
-       return 8;
+       return ICON_HEIGHT;
     }
 
 }

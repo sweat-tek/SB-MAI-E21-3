@@ -7,11 +7,16 @@ package org.jhotdraw.gui.plaf.palette;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import javax.swing.JToolBar;
+import sun.java2d.SunGraphics2D;
 
 /**
  *
@@ -20,6 +25,18 @@ import javax.swing.JToolBar;
 public class PaletteToolBarUITestUtil {
     
     Robot robot;
+    
+   PaletteToolBarUI.FloatingManager floatManager;
+   PaletteToolBarUI.FloatableStrategy floatableStrg;
+   PaletteToolBarUI.NonFloatableStrategy nonFloatableStrg;
+   
+    Class<?> floatManagerClass;
+    Class<?> floatableStrgClass;
+    Class<?> nonFloatableStrgClass;
+    
+    Constructor<?> constructorManager;
+    Constructor<?> constructorNonFloatableStrg;
+    Constructor<?> constructorFloatableStrg;
   
     public Class getToolBarDialogClass() throws Exception{
         return Class.forName("org.jhotdraw.gui.plaf.palette.PaletteToolBarUI$ToolBarDialog");
@@ -28,6 +45,43 @@ public class PaletteToolBarUITestUtil {
      public Class getDragWindowClass() throws Exception{
         return  Class.forName("org.jhotdraw.gui.plaf.palette.PaletteToolBarUI$DragWindow");
     }
+     
+    public Class getToolsToolBarClass() throws Exception{
+        return Class.forName("org.jhotdraw.samples.svg.gui.ToolsToolBar");
+    }
+    
+    public Constructor getToolsToolBarConstructor() throws Exception{
+        Constructor<?> getToolsToolBarConstructor = getToolsToolBarClass().getConstructor();
+        getToolsToolBarConstructor.setAccessible(true);
+        return getToolsToolBarConstructor;
+    }
+    
+    public Method getCompDispToolsToolBarMethod() throws Exception{
+        Method getComponentDisplayedToolsToolbar = getToolsToolBarClass().getDeclaredMethod("getComponentDisplayed");
+        getComponentDisplayedToolsToolbar.setAccessible(true);
+        return getComponentDisplayedToolsToolbar;
+    }
+     
+     
+     public Method paintDragWindowMethod() throws Exception{
+        Method paintDragWindowMethod = getDragWindowClass().getDeclaredMethod("paintDragWindow", Graphics.class);
+        paintDragWindowMethod.setAccessible(true);
+        return paintDragWindowMethod;
+     }
+     
+
+     
+    public Field getDockingSourceField() throws Exception{
+        Field dockingSourceField =PaletteToolBarUI.class.getDeclaredField("dockingSource");
+        dockingSourceField.setAccessible(true);
+        return dockingSourceField;
+    } 
+     
+       public Field getConstraintBeforeFloating() throws Exception{
+         Field constraintBeforeFloating =PaletteToolBarUI.class.getDeclaredField("constraintBeforeFloating");
+         constraintBeforeFloating.setAccessible(true);
+         return constraintBeforeFloating;
+     } 
 
 
     public Method createDragWindowMethod() throws Exception{
@@ -62,7 +116,45 @@ public class PaletteToolBarUITestUtil {
         getComparisonPointMethod.setAccessible(true);
         return getComparisonPointMethod;
      }
+     
+     
+    public Class geFloatManagerClass() throws Exception{
+        floatManagerClass = Class.forName("org.jhotdraw.gui.plaf.palette.PaletteToolBarUI$FloatingManager");
+        return floatManagerClass;
+    }
     
+    
+     public Class geFloatableStrategyClass() throws Exception{
+        floatableStrgClass = Class.forName("org.jhotdraw.gui.plaf.palette.PaletteToolBarUI$FloatableStrategy");
+        return floatableStrgClass;
+    } 
+        
+    public Class geNonFloatableStrategyClass() throws Exception{
+        nonFloatableStrgClass = Class.forName("org.jhotdraw.gui.plaf.palette.PaletteToolBarUI$NonFloatableStrategy");
+        return nonFloatableStrgClass;
+     }
+     
+    public Constructor getManagerConstructor() throws Exception{ 
+        constructorManager = floatManagerClass.getDeclaredConstructor(boolean.class, boolean.class);
+        constructorManager.setAccessible(true);
+        return constructorManager;
+    }
+    
+     public Constructor getFloatableStrategyConstructor() throws Exception{ 
+        constructorFloatableStrg = floatableStrgClass.getDeclaredConstructor();
+        constructorFloatableStrg.setAccessible(true);
+        return constructorFloatableStrg;
+    }
+    
+    public Constructor getNonFloatableStrategyConstructor() throws Exception{ 
+        constructorNonFloatableStrg = nonFloatableStrgClass.getDeclaredConstructor();
+        constructorFloatableStrg.setAccessible(true);
+        return constructorNonFloatableStrg;
+    }
+    
+    public Constructor<?> getFloatingManager(PaletteToolBarUI toolbarUI, PaletteToolBarUI.FloatingStrategy strategy) throws Exception{
+       return (Constructor<?>) constructorManager.newInstance(toolbarUI, strategy);
+    }
     
     
     public static void  clickMouse(String button, Robot r, int delay){

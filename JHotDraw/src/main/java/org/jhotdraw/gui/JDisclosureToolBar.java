@@ -28,7 +28,7 @@ import org.jhotdraw.gui.plaf.palette.*;
 public class JDisclosureToolBar extends JToolBar {
 
     private JButton disclosureButton;
-
+    protected static final int DEFAULT_DISCLOSURE_STATE = 0;
    //REFACTORIZATION momdifiers were in incorrect order
     public static final String DISCLOSURE_STATE_PROPERTY = "disclosureState";
     public static final String DISCLOSURE_STATE_COUNT_PROPERTY = "disclosureStateCount";
@@ -37,6 +37,11 @@ public class JDisclosureToolBar extends JToolBar {
     public JDisclosureToolBar() {
         setUI(PaletteToolBarUI.createUI(this));
         initComponents();
+    }
+    
+
+    protected int getDefaultDisclosureState() {
+        return DEFAULT_DISCLOSURE_STATE;
     }
     
 //REFACTORIZATION -> uneeded local variable (button), large method-> divided into several one
@@ -54,9 +59,8 @@ public class JDisclosureToolBar extends JToolBar {
         add(disclosureButton, gbc);
       
         putClientProperty(PaletteToolBarUI.TOOLBAR_INSETS_OVERRIDE_PROPERTY, new Insets(0, 0, 0, 0));
-        putClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY, new EmptyIcon(10, 8));
-        
-       // setToolBarTitle(this, getIconProperty(this));
+        putClientProperty(PaletteToolBarUI.TOOLBAR_ICON_PROPERTY, new DisclosureIcon());
+       
         
     }
 
@@ -79,13 +83,18 @@ public class JDisclosureToolBar extends JToolBar {
         });
     }
   
+    //używana przez wszystkie bary 
     public void setDisclosureStateCount(int newValue) {
         int oldValue = getDisclosureStateCount();
         disclosureButton.putClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY, newValue);
         firePropertyChange(DISCLOSURE_STATE_COUNT_PROPERTY, oldValue, newValue);
     }
     
-//REAFACTORIZATION -> DUPLICATED CODE 
+    
+    
+    
+    
+        //ActionsToolBar, AbstractToolBar
     public void setDisclosureState(int newValue) {
         
         int oldValue = getDisclosureState();
@@ -109,7 +118,7 @@ public class JDisclosureToolBar extends JToolBar {
         updateToolbarView(oldValue, newValue);
     }
     
-    //TRZEBA ZROBIĆ DODATKOWE METODY TU KTÓRE BĘDA USTAWIAŁY BUTTONY JAK USER CHCE
+    
     public GridBagConstraints createGridBagConstraints(int gridX, int gridY){
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gridX;
@@ -117,6 +126,7 @@ public class JDisclosureToolBar extends JToolBar {
         return gbc;
     }
     
+    //ToolsToolBar
     public GridBagConstraints createGridBagConstraints(int gridX, int gridY, Insets insets){
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gridX;
@@ -126,6 +136,7 @@ public class JDisclosureToolBar extends JToolBar {
     }
     
 
+    //Uzywana wewnętrznie 
     private void updateToolbarView(int oldValue, int newValue) {
         invalidate();
         Container parent = getParent();
@@ -137,6 +148,7 @@ public class JDisclosureToolBar extends JToolBar {
 
         firePropertyChange(DISCLOSURE_STATE_PROPERTY, oldValue, newValue);
     }
+    
     
     public int getDisclosureStateCount() {
         Integer value = (Integer) disclosureButton.getClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY);

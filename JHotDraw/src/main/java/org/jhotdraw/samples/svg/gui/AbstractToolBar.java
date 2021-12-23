@@ -33,13 +33,12 @@ import org.jhotdraw.draw.*;
 public abstract class AbstractToolBar extends JDisclosureToolBar {
     
     
-    //REFACTORIZATION
-    //there should be a singletons
+    
     protected DrawingEditor editor;
     private JComponent[] panels;
     protected Preferences prefs;
     protected PropertyChangeListener eventHandler;
-    private static final int DEFAULT_DISCLOSURE_STATE = 0;
+ 
     
     
     
@@ -98,7 +97,7 @@ public abstract class AbstractToolBar extends JDisclosureToolBar {
         
         this.editor = editor;
         if (editor != null) {
-            //init(); it is an empty method it should be removed
+            
             setDisclosureState(Math.max(0, Math.min(getDisclosureStateCount(), prefs.getInt(getID() + ".disclosureState", DEFAULT_DISCLOSURE_STATE))));
             this.addPropertyChangeListener(getDisclosureEventHandler());
             
@@ -109,28 +108,25 @@ public abstract class AbstractToolBar extends JDisclosureToolBar {
         return editor;
     }
 
-    @Override
-    // divided into createDisclosedComponent and getDisclosedComponent
-    protected final JComponent getDisclosedComponent(int state) {
+    
+  //Ważna metoda
+  @Override
+  protected final JComponent getDisclosedComponent(int state) {
         if (panels == null){
             panels = new JPanel[getDisclosureStateCount()];
             for (int i = 0; i < panels.length; i++) {
                panels[i] = new ProxyPanel();
-           }
+          }
         }
        return panels[state];
-    }
+  }
 
     
     //purpose is to replace this method by the above one.s
     abstract  JComponent createDisclosedComponent(int state); //changed to abstract method, instead of empty one (but it can be a  private void method which creates a component, and it is called in getDosclosedMethod)
-   
-    //CHECK ALL OF THE USAGES and force the subclasses to override createDisclosedComponent2 to finally remove createDisclosedCOmponent to make getDisclosedCOmponent the function responsible for the thing inside this overrided method
-    protected int getDefaultDisclosureState() {
-        return DEFAULT_DISCLOSURE_STATE;
-    }
     
     
+
     private class ProxyPanel extends JPanel {
 
         private Runnable runner;
@@ -182,7 +178,7 @@ public abstract class AbstractToolBar extends JDisclosureToolBar {
                             }
                             parent.revalidate();
                             
-                            //to sprawia że na widoku na początku mam normalną wielkość component baru
+                            
                             ((JComponent) parent.getRootPane().getContentPane()).revalidate();
 
                         }

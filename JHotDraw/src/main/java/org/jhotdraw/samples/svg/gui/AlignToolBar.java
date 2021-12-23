@@ -156,6 +156,8 @@ public class AlignToolBar extends AbstractToolBar {
     protected String getID() {
         return "align";
     }
+
+   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
