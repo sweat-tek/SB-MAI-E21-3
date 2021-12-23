@@ -79,6 +79,4 @@ public class WhenDragging extends Stage<WhenDragging> {
     }
     
 
-
-   
 }
