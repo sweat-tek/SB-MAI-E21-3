@@ -1,16 +1,4 @@
-/*
- * @(#)SVGText.java  2.1.1  2008-05-15
- *
- * Copyright (c) 1996-2008 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
- *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
- */
+
 
 package org.jhotdraw.samples.svg.figures;
 
@@ -37,11 +25,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * because outline layout does not match with TextLayout.draw() output.
  * Cache outline to improve performance.
  *
- * @author Werner Randelshofer
- * @version 2.1.1 Rectangle returned by getDrawingArea needs to be cloned.
- * <br>2.1 2007-05-13 Fixed transformation issues.
- * <br>2.0 2007-04-14 Adapted for new AttributeKeys.TRANSFORM support.
- * <br>1.0 July 8, 2006 Created.
+
  */
 public class SVGTextFigure
         extends SVGAttributedFigure
